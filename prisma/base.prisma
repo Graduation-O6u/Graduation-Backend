@@ -1,6 +1,6 @@
 datasource db {
     provider = "mysql"
-    url      = env("DATABASE_URL")
+    url      = "mysql://root:WpnyRx3aDkyzH2RofutZ@containers-us-west-121.railway.app:7965/railway"
 }
 
 generator client {
