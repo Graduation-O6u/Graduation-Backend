@@ -17,6 +17,7 @@ export class AuthService {
   // signip
   async signup(res, createUser: createUser) {
     const { name, email, password, jobId, cityId } = createUser;
+    console.log(email);
     const emailExist = await this.prisma.user.findUnique({
       where: {
         email,
