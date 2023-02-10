@@ -14,7 +14,7 @@ export class createUser {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, { message: "email not valid" })
+  @Matches(/^[\w\.]+@([\w-]+\.)+[\w-]{2,4}$/, { message: "email not valid" })
   email: string;
 
   @IsNotEmpty()
