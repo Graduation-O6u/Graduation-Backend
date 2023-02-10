@@ -24,6 +24,7 @@ model User {
   job             Jobs     @relation(name: "JobsToUser", fields: [jobId], references: [id])
   token           Token[]  @relation(name: "TokenToUser")
   secret          secret?  @relation(name: "UserTosecret")
+  cv              String   @default("")
 }
 
 model Cities {
