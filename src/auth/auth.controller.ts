@@ -31,4 +31,14 @@ export class AuthController {
   signin(@Res() res: Response, @Body(ValidationPipe) loginDto: loginDto) {
     return this.authService.signin(res, loginDto);
   }
+
+  @Get("/cities")
+  getCities(@Res() res: Response) {
+    return this.authService.getCities(res);
+  }
+
+  @Get("/jobs")
+  getJobs(@Res() res: Response) {
+    return this.authService.getJobs(res);
+  }
 }

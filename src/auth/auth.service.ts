@@ -110,4 +110,13 @@ export class AuthService {
       refreshToken: refreshToken.refreshToken,
     });
   }
+
+  async getCities(res) {
+    const cities = await this.prisma.cities.findMany();
+    return ResponseController.success(res, "get Data Successfully", cities);
+  }
+  async getJobs(res) {
+    const jobs = await this.prisma.jobs.findMany();
+    return ResponseController.success(res, "get Data Successfully", jobs);
+  }
 }

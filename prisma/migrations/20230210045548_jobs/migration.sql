@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `cities` ADD COLUMN `flag` VARCHAR(191) NOT NULL DEFAULT '';

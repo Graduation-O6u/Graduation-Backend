@@ -29,14 +29,15 @@ model User {
 model Cities {
   id   String @id @default(uuid())
   name String
+  flag String @default("")
   user User[] @relation(name: "CitiesToUser")
 }
 
 model Jobs {
-  id      String @id @default(uuid())
-  name    String
-  subName String @default("")
-  user    User[] @relation(name: "JobsToUser")
+  id       String @id @default(uuid())
+  title    String
+  subTitle String @default("")
+  user     User[] @relation(name: "JobsToUser")
 }
 
 model Token {
