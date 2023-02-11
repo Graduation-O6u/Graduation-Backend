@@ -6,8 +6,7 @@ import { PrismaService } from "src/prisma.service";
 import { loginDto } from "./dto/login.dto";
 import { tokenService } from "./token.service";
 import * as sgMail from "@sendgrid/mail";
-import * as speakeasy from "speakeasy";
-import { randomUUID } from "crypto";
+import fetch from "node-fetch";
 
 @Injectable()
 export class AuthService {
