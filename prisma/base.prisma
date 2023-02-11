@@ -15,31 +15,27 @@ model Education {
 }
 
 model User {
-    id              String    @id @default(uuid())
-    email           String    @unique
-    emailVerified   Boolean   @default(false)
+    id              String   @id @default(uuid())
+    email           String   @unique
+    emailVerified   Boolean  @default(false)
     name            String
-    image           String    @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")
-    backgroundImage String    @default("https://www.solidbackgrounds.com/images/1920x1080/1920x1080-gray-solid-color-background.jpg")
+    image           String   @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")
+    backgroundImage String   @default("https://www.solidbackgrounds.com/images/1920x1080/1920x1080-gray-solid-color-background.jpg")
     password        String?
-    role            Role      @default(USER)
-    createdAt       DateTime  @default(now())
+    role            Role     @default(USER)
+    createdAt       DateTime @default(now())
     cityId          String
-    city            Cities    @relation(name: "CitiesToUser", fields: [cityId], references: [id])
-    jobId           String
-    aboutme         String    @db.Text
-    educationId     String
-    education       Education @relation(fields: [educationId], references: [id])
-    job             Jobs      @relation(name: "JobsToUser", fields: [jobId], references: [id])
-    token           Token[]   @relation(name: "TokenToUser")
-    secret          secret?   @relation(name: "UserTosecret")
-    cv              String    @default("")
-}
 
-model Cities {
-    id   String @id @default(uuid())
-    name String
-    user User[] @relation(name: "CitiesToUser")
+    jobId       String
+    aboutme     String      @db.Text
+    educationId String?
+    education   Education?  @relation(fields: [educationId], references: [id])
+    job         Jobs        @relation(name: "JobsToUser", fields: [jobId], references: [id])
+    secret      secret?
+    cv          String      @default("")
+    baseUser    following[] @relation(name: "user")
+    userFollow  following[] @relation(name: "userFollow")
+    Token       Token[]
 }
 
 model Jobs {
@@ -54,11 +50,12 @@ model Token {
     userId       String
     type         TokenType
     refreshId    String?   @unique
-    refreshToken Token?    @relation(name: "AccesHasRefresh", fields: [refreshId], references: [id])
+    refreshToken Token?    @relation("AccesHasRefresh", fields: [refreshId], references: [id])
     updatedAt    DateTime  @default(now()) @updatedAt
-    accessToken  Token?    @relation(name: "AccesHasRefresh")
+    accessToken  Token?    @relation("AccesHasRefresh")
     createdAt    DateTime  @default(now())
-    User         User      @relation(name: "TokenToUser", fields: [userId], references: [id])
+    valid        Boolean   @default(true)
+    user         User      @relation(fields: [userId], references: [id])
 }
 
 model secret {
@@ -66,7 +63,7 @@ model secret {
     userId String     @unique
     token  String
     type   secretType @default(PASSWORD_RESET)
-    user   User       @relation(name: "UserTosecret", fields: [userId], references: [id])
+    user   User       @relation(fields: [userId], references: [id])
 }
 
 enum Role {
@@ -83,4 +80,12 @@ enum TokenType {
 enum secretType {
     EMAIL_VERIFICATION
     PASSWORD_RESET
+}
+
+model following {
+    id       String @id @default(uuid())
+    User     User   @relation(name: "user", fields: [userId], references: [id])
+    userId   String
+    friend   User   @relation(name: "userFollow", fields: [friendId], references: [id])
+    friendId String
 }

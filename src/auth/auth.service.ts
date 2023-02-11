@@ -7,6 +7,7 @@ import { loginDto } from "./dto/login.dto";
 import { tokenService } from "./token.service";
 import * as sgMail from "@sendgrid/mail";
 import * as speakeasy from "speakeasy";
+import { randomUUID } from "crypto";
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,6 @@ export class AuthService {
   // signip
   async signup(res, createUser: createUser) {
     const { name, email, password, jobId, cityId } = createUser;
-    console.log(email);
     const emailExist = await this.prisma.user.findUnique({
       where: {
         email,
@@ -25,14 +25,6 @@ export class AuthService {
     });
     if (emailExist)
       return ResponseController.conflict(res, "Email already exist");
-
-    const cityExist = await this.prisma.cities.findUnique({
-      where: {
-        id: cityId,
-      },
-    });
-
-    if (!cityExist) return ResponseController.conflict(res, "City not exist");
 
     const jobExist = await this.prisma.jobs.findUnique({
       where: {
@@ -45,14 +37,14 @@ export class AuthService {
     const hashPassword = await bcrypt.hash(password, 8);
     const newUser = await this.prisma.user.create({
       data: {
-        name,
-        email,
+        name: name,
+        email: email,
         password: hashPassword,
-        jobId,
-        cityId,
+        cityId: cityId,
+        jobId: jobId,
+        aboutme: "",
       },
     });
-    console.log(process.env.SENDGRID_API_KEY);
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     const msg = {
       to: newUser.email, // Change to your recipient
@@ -73,7 +65,7 @@ export class AuthService {
   }
   // signin
   async signin(res, loginDto: loginDto) {
-    const { email, password } = loginDto;
+    const { email, password, remember } = loginDto;
     const emailExist = await this.prisma.user.findUnique({
       where: {
         email,
@@ -100,7 +92,10 @@ export class AuthService {
         "Email not Verified"
       );
     }
-    const refreshToken = await this.tokenServices.createRefresh(emailExist);
+    const refreshToken = await this.tokenServices.createRefresh(
+      emailExist,
+      remember
+    );
     const accessToken = await this.tokenServices.createAccess(
       emailExist,
       refreshToken.refreshId
@@ -113,11 +108,23 @@ export class AuthService {
   }
 
   async getCities(res) {
-    const cities = await this.prisma.cities.findMany();
-    return ResponseController.success(res, "get Data Successfully", cities);
+    await fetch(
+      "https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/index.json"
+    )
+      .then((response) => response.json())
+      .then((data) =>
+        ResponseController.success(
+          res,
+          "get Data Successfully",
+          Object.keys(data).map((key) => data[key])
+        )
+      );
   }
   async getJobs(res) {
     const jobs = await this.prisma.jobs.findMany();
     return ResponseController.success(res, "get Data Successfully", jobs);
+  }
+  async addCities(data) {
+    return Object.keys(data).map((key) => data[key]);
   }
 }

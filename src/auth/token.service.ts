@@ -17,11 +17,11 @@ export class tokenService {
     const accessToken = jwt.sign(
       { userId: user.id, id: tokenId.id, role: user.role },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: 2 * 24 * 60 * 60 }
+      { expiresIn: 1 * 24 * 60 * 60 }
     );
     return accessToken;
   }
-  async createRefresh(user: User) {
+  async createRefresh(user: User, valid: boolean) {
     const tokenId = await this.prisma.token.create({
       data: {
         userId: user.id,
@@ -36,7 +36,7 @@ export class tokenService {
         type: TokenType.RefreshToken,
       },
       process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: 30 * 24 * 60 * 60 }
+      { expiresIn: valid ? 30 : 1 * 24 * 60 * 60 }
     );
     return { refreshToken, refreshId: tokenId.id };
   }

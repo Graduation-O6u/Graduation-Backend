@@ -2,8 +2,7 @@
 	"mixers": [
 	  {
 		  "input": [
-			  "prisma/base.prisma",
-			  "src/auth/token.prisma"
+			  "prisma/base.prisma"
 		  ],
 		  "output": "prisma/schema.prisma"
 	  }
