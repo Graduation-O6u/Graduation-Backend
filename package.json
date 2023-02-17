@@ -22,9 +22,10 @@
     "schema1:generate": "npx prismix && prisma format && prisma generate",
     "schema1:migrate": "yarn schema1:generate && prisma migrate dev",
     "generate": "yarn schema1:generate",
-    "migrate": "yarn schema1:migrate"
+    "migrate": "npx prisma db push --preview-feature"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/jwt": "^10.0.2",
@@ -44,6 +45,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "jsonwebtoken": "^9.0.0",
+    "nodemailer": "^6.9.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "prisma": "^4.8.1",

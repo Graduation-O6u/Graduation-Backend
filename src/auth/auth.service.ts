@@ -7,17 +7,26 @@ import { loginDto } from "./dto/login.dto";
 import { tokenService } from "./token.service";
 import * as sgMail from "@sendgrid/mail";
 import fetch from "node-fetch";
+import { MailService } from "src/mail/mail.service";
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private tokenServices: tokenService
+    private tokenServices: tokenService,
+    private mail: MailService
   ) {}
   // signip
   async signup(res, createUser: createUser) {
     const { name, email, password, jobId, cityId } = createUser;
-    const emailExist = await this.prisma.user.findUnique({
+    let x = await this.mail.sendUserConfirmation(
+      name,
+      email,
+      `123456`,
+      "confirmation"
+    );
+    console.log(x);
+    /*  const emailExist = await this.prisma.user.findUnique({
       where: {
         email,
       },
@@ -60,6 +69,7 @@ export class AuthService {
       .catch((error) => {
         console.error(error);
       });
+      */
     return ResponseController.success(res, "user created Successfully", null);
   }
   // signin
