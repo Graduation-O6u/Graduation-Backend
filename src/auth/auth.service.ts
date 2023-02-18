@@ -212,6 +212,13 @@ export class AuthService {
       encoding: "base32",
       step: 300,
     });
+    await this.prisma.secret.create({
+      data: {
+        userId: emailExist.id,
+        code: code,
+        url: secret,
+      },
+    });
     //
     await this.mail.sendUserConfirmation(
       emailExist.name,
