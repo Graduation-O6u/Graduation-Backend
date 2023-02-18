@@ -5,14 +5,20 @@ import { Injectable } from "@nestjs/common";
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
-  async sendUserConfirmation(name, email, code: string, template: string) {
+  async sendUserConfirmation(
+    name,
+    email,
+    url: string,
+    code: string,
+    template: string
+  ) {
     await this.mailerService.sendMail({
       from: "fhakem75@gmail.com",
       to: email,
       // from: '"Support Team" <support@example.com>', // override default from
       subject: "Welcome to Nice App! Confirm your Email",
-      //   template: `./${template}`, // `.hbs` extension is appended automatically
-      text: "Welcome NestJS Email Sending Tutorial",
+      template: `./templates/confirmation.hbs`, // `.hbs` extension is appended automatically
+      text: `Hey ${name} \n Please put this code ${code} \n in this url ${url}`,
     });
   }
 }

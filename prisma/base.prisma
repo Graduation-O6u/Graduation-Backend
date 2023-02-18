@@ -7,35 +7,25 @@ generator client {
     provider = "prisma-client-js"
 }
 
-model Education {
-    id    String  @id @default(uuid())
-    name  String
-    image String?
-    user  User[]
-}
-
 model User {
-    id              String   @id @default(uuid())
-    email           String   @unique
-    emailVerified   Boolean  @default(false)
+    id              String      @id @default(uuid())
+    email           String      @unique
+    emailVerified   Boolean     @default(false)
     name            String
-    image           String   @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")
-    backgroundImage String   @default("https://www.solidbackgrounds.com/images/1920x1080/1920x1080-gray-solid-color-background.jpg")
+    image           String      @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")
+    backgroundImage String      @default("https://www.solidbackgrounds.com/images/1920x1080/1920x1080-gray-solid-color-background.jpg")
     password        String?
-    role            Role     @default(USER)
-    createdAt       DateTime @default(now())
+    role            Role        @default(USER)
+    createdAt       DateTime    @default(now())
     cityId          String
-
-    jobId       String
-    aboutme     String      @db.Text
-    educationId String?
-    education   Education?  @relation(fields: [educationId], references: [id])
-    job         Jobs        @relation(name: "JobsToUser", fields: [jobId], references: [id])
-    secret      secret?
-    cv          String      @default("")
-    baseUser    following[] @relation(name: "user")
-    userFollow  following[] @relation(name: "userFollow")
-    Token       Token[]
+    jobId           String
+    aboutme         String      @db.Text
+    job             Jobs        @relation(name: "JobsToUser", fields: [jobId], references: [id])
+    secret          secret?
+    cv              String      @default("")
+    baseUser        following[] @relation(name: "user")
+    userFollow      following[] @relation(name: "userFollow")
+    Token           Token[]
 }
 
 model Jobs {
@@ -59,10 +49,10 @@ model Token {
 }
 
 model secret {
-    id     String     @id @default(uuid())
     userId String     @unique
-    token  String
-    type   secretType @default(PASSWORD_RESET)
+    url    String     @id
+    code   String
+    type   secretType @default(EMAIL_VERIFICATION)
     user   User       @relation(fields: [userId], references: [id])
 }
 

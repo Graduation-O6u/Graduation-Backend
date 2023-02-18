@@ -7,13 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Education {
-  id    String  @id @default(uuid())
-  name  String
-  image String?
-  user  User[]
-}
-
 model User {
   id              String      @id @default(uuid())
   email           String      @unique
@@ -27,8 +20,6 @@ model User {
   cityId          String
   jobId           String
   aboutme         String      @db.Text
-  educationId     String?
-  education       Education?  @relation(fields: [educationId], references: [id])
   job             Jobs        @relation(name: "JobsToUser", fields: [jobId], references: [id])
   secret          secret?
   cv              String      @default("")
@@ -58,10 +49,10 @@ model Token {
 }
 
 model secret {
-  id     String     @id @default(uuid())
   userId String     @unique
-  token  String
-  type   secretType @default(PASSWORD_RESET)
+  url    String     @id
+  code   String
+  type   secretType @default(EMAIL_VERIFICATION)
   user   User       @relation(fields: [userId], references: [id])
 }
 

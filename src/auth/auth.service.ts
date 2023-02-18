@@ -5,9 +5,11 @@ import * as bcrypt from "bcrypt";
 import { PrismaService } from "src/prisma.service";
 import { loginDto } from "./dto/login.dto";
 import { tokenService } from "./token.service";
-import * as sgMail from "@sendgrid/mail";
 import fetch from "node-fetch";
 import { MailService } from "src/mail/mail.service";
+import * as speakeasy from "speakeasy";
+import e from "express";
+import { url } from "inspector";
 
 @Injectable()
 export class AuthService {
@@ -19,14 +21,7 @@ export class AuthService {
   // signip
   async signup(res, createUser: createUser) {
     const { name, email, password, jobId, cityId } = createUser;
-    let x = await this.mail.sendUserConfirmation(
-      name,
-      email,
-      `123456`,
-      "confirmation"
-    );
-    console.log(x);
-    /*  const emailExist = await this.prisma.user.findUnique({
+    const emailExist = await this.prisma.user.findUnique({
       where: {
         email,
       },
@@ -53,26 +48,36 @@ export class AuthService {
         aboutme: "",
       },
     });
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    const msg = {
-      to: newUser.email, // Change to your recipient
-      from: "fhakem75@gmail.com", // Change to your verified sender
-      subject: "Sending with SendGrid is Fun",
-      text: "and easy to do anywhere, even with Node.js",
-      html: "<strong>and easy to do anywhere, even with Node.js</strong>",
-    };
-    sgMail
-      .send(msg)
-      .then(() => {
-        console.log("Email sent");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-      */
+    const secret = speakeasy.generateSecret({ length: 20 });
+    const secret2 = speakeasy.generateSecret().base32;
+    const url = speakeasy.totp({
+      secret: secret.base32,
+      encoding: "base32",
+      time: 10 * 60, // specified in seconds
+    });
+    const code = speakeasy.totp({
+      secret: secret2,
+      digits: 5,
+      encoding: "base32",
+      step: 300,
+    });
+    await this.mail.sendUserConfirmation(
+      name,
+      email,
+      `${process.env.BASE_URL}verify-email/${url}`,
+      code.toString(),
+      "confirmation"
+    );
+    await this.prisma.secret.create({
+      data: {
+        userId: newUser.id,
+        url: url,
+        code: code.toString(),
+      },
+    });
     return ResponseController.success(res, "user created Successfully", null);
   }
-  // signin
+  //ss
   async signin(res, loginDto: loginDto) {
     const { email, password, remember } = loginDto;
     const emailExist = await this.prisma.user.findUnique({
@@ -135,5 +140,283 @@ export class AuthService {
   }
   async addCities(data) {
     return Object.keys(data).map((key) => data[key]);
+  }
+  //g
+  async verify(id, res, verifyDto) {
+    const { code } = verifyDto;
+    let secret = speakeasy.generateSecret({ length: 20 });
+
+    const valid = speakeasy.hotp.verify({
+      secret: secret.base32,
+      encoding: "base32",
+      token: id,
+      counter: 10 * 60,
+    });
+    if (!valid) {
+      const exist = await this.prisma.secret.findFirst({
+        where: {
+          url: id,
+        },
+      });
+      if (!exist) {
+        return ResponseController.notFound(res, "page not Found");
+      } else {
+        await this.prisma.secret.delete({
+          where: {
+            url: id,
+          },
+        });
+        return ResponseController.badRequest(
+          res,
+          "Token is Expired",
+          "Token is Expired"
+        );
+      }
+    }
+
+    const userExist = await this.prisma.secret.findFirst({
+      where: {
+        url: id,
+      },
+      select: { user: true, code: true },
+    });
+    if (!userExist) {
+      return ResponseController.badRequest(
+        res,
+        "user not found",
+        "user not found"
+      );
+    }
+    const verify = speakeasy.totp.verify({
+      secret: secret.base32,
+      encoding: "base32",
+      token: code,
+      digits: 5,
+      step: 300,
+    });
+    if (!verify) {
+      return ResponseController.badRequest(res, "Invalid Code", "Invalid Code");
+    }
+    await this.prisma.user.update({
+      where: {
+        id: userExist.user.id,
+      },
+      data: {
+        emailVerified: true,
+      },
+    });
+    await this.prisma.secret.deleteMany({
+      where: {
+        userId: userExist.user.id,
+      },
+    });
+    return ResponseController.success(res, "Email Verified Successfully", null);
+  }
+
+  async forgetPassword(res, forgetDto) {
+    const { email } = forgetDto;
+    const emailExist = await this.prisma.user.findFirst({
+      where: {
+        email,
+      },
+    });
+    if (!emailExist) {
+      return ResponseController.badRequest(
+        res,
+        "Email not found",
+        "Email not found"
+      );
+    }
+    if (!emailExist.emailVerified) {
+      return ResponseController.badRequest(
+        res,
+        "Email not verified",
+        "Email not verified"
+      );
+    }
+
+    const secret = speakeasy.generateSecret({ length: 20 });
+    const secret2 = speakeasy.generateSecret().base32;
+    const url = speakeasy.totp({
+      secret: secret.base32,
+      encoding: "base32",
+      time: 10 * 60, // specified in seconds
+    });
+    const code = speakeasy.totp({
+      secret: secret2,
+      digits: 5,
+      encoding: "base32",
+      step: 300,
+    });
+
+    await this.mail.sendUserConfirmation(
+      name,
+      email,
+      `${process.env.BASE_URL}reset-password/${url}`,
+      code.toString(),
+      "confirmation"
+    );
+    return ResponseController.success(res, "code sent Successfully", null);
+  }
+
+  async resetPassword(id, res, verifyDto) {
+    const { code } = verifyDto;
+    let secret = speakeasy.generateSecret({ length: 20 });
+
+    const valid = speakeasy.hotp.verify({
+      secret: secret.base32,
+      encoding: "base32",
+      token: id,
+      counter: 10 * 60,
+    });
+    if (!valid) {
+      const exist = await this.prisma.secret.findFirst({
+        where: {
+          url: id,
+        },
+      });
+      if (!exist) {
+        return ResponseController.notFound(res, "page not Found");
+      } else {
+        await this.prisma.secret.delete({
+          where: {
+            url: id,
+          },
+        });
+        return ResponseController.badRequest(
+          res,
+          "Token is Expired",
+          "Token is Expired"
+        );
+      }
+    }
+
+    const userExist = await this.prisma.secret.findFirst({
+      where: {
+        url: id,
+      },
+      select: { user: true, code: true },
+    });
+    if (!userExist) {
+      return ResponseController.badRequest(
+        res,
+        "user not found",
+        "user not found"
+      );
+    }
+    const verify = speakeasy.totp.verify({
+      secret: secret.base32,
+      encoding: "base32",
+      token: code,
+      digits: 5,
+      step: 300,
+    });
+    if (!verify) {
+      return ResponseController.badRequest(res, "Invalid Code", "Invalid Code");
+    }
+    await this.prisma.secret.deleteMany({
+      where: {
+        userId: userExist.user.id,
+      },
+    });
+    const url =
+      process.env.BASE_URL +
+      "change_password/" +
+      speakeasy.totp({
+        secret: secret.base32,
+        encoding: "base32",
+        time: 10 * 60, // specified in seconds
+      });
+    await this.prisma.secret.create({
+      data: {
+        code: "0",
+        url,
+        userId: userExist.user.id,
+      },
+    });
+    return ResponseController.success(res, "Email Verified Successfully", {
+      url,
+    });
+  }
+  async changePassword(id, res, changePasswordDto) {
+    const { password } = changePasswordDto;
+    let secret = speakeasy.generateSecret({ length: 20 });
+
+    const valid = speakeasy.hotp.verify({
+      secret: secret.base32,
+      encoding: "base32",
+      token: id,
+      counter: 10 * 60,
+    });
+    if (!valid) {
+      const exist = await this.prisma.secret.findFirst({
+        where: {
+          url: id,
+        },
+      });
+      if (!exist) {
+        return ResponseController.notFound(res, "page not Found");
+      } else {
+        await this.prisma.secret.delete({
+          where: {
+            url: id,
+          },
+        });
+        return ResponseController.badRequest(
+          res,
+          "Token is Expired",
+          "Token is Expired"
+        );
+      }
+    }
+
+    const userExist = await this.prisma.secret.findFirst({
+      where: {
+        url: id,
+      },
+      select: { user: true, code: true },
+    });
+    if (!userExist) {
+      return ResponseController.badRequest(
+        res,
+        "user not found",
+        "user not found"
+      );
+    }
+
+    await this.prisma.secret.deleteMany({
+      where: {
+        userId: userExist.user.id,
+      },
+    });
+    const hashPassword = await bcrypt.hash(password, 8);
+
+    await this.prisma.user.update({
+      where: {
+        id: userExist.user.id,
+      },
+      data: {
+        password: hashPassword,
+      },
+    });
+    return ResponseController.success(
+      res,
+      "Password Change Successfully",
+      null
+    );
+  }
+
+  async logout(req, res) {
+    const user = req.user.userObject.id;
+    const token = req.user.jti;
+    const found = await this.prisma.token.findFirst({
+      where: { id: token, userId: user, type: "AccessToken" },
+    });
+    if (!found) return ResponseController.notFound(res, "token not found");
+    await this.prisma.token.delete({ where: { id: found.refreshId } });
+    await this.prisma.token.delete({
+      where: { id: found.id },
+    });
+    return ResponseController.success(res, "Session destroyed successfully");
   }
 }

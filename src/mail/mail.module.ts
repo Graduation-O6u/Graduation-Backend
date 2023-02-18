@@ -14,8 +14,12 @@ import { join } from "path";
           pass: process.env.MAIL_PASS,
         },
       },
+      defaults: {
+        from: `${process.env.MAIL_FROM_NAME} <${process.env.MAIL_FROM_EMAIL}>`,
+      },
     }),
   ],
+  //
   providers: [MailService],
   exports: [MailService],
 })

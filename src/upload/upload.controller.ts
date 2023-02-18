@@ -9,11 +9,13 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Observable, of } from "rxjs";
 import { ApiAssetFile } from "./decorator/api-file.decorator";
 import { ParseFile } from "./pipes/parse-file.pip";
+import { AuthGuard } from "@nestjs/passport";
 
 @ApiTags("Upload")
 @Controller("upload")
 export class UploadController {
   @ApiBearerAuth("Access Token")
+  @UseGuards(AuthGuard("jwt"))
   @Post("file")
   @ApiAssetFile("file", true)
   uploadFile(@UploadedFile(ParseFile) file): Observable<{ url: string }> {
