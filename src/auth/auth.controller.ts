@@ -48,7 +48,7 @@ export class AuthController {
     return this.authService.getJobs(res);
   }
 
-  @Get("/verify-email/:id")
+  @Post("/verify-email/:id")
   async verifyEmail(
     @Param("id") id: string,
     @Res() res,
@@ -57,12 +57,12 @@ export class AuthController {
     return this.authService.verify(id, res, verifyDto);
   }
 
-  @Get("/forgetPassword")
+  @Post("/forgetPassword")
   async forgetPassword(@Res() res, @Body(ValidationPipe) forgetDto: forgetDto) {
     return this.authService.forgetPassword(res, forgetDto);
   }
 
-  @Get("/reset-password/:id")
+  @Post("/reset-password/:id")
   async resetPassword(
     @Param("id") id: string,
     @Res() res,
@@ -70,7 +70,7 @@ export class AuthController {
   ) {
     return this.authService.resetPassword(id, res, verifyDto);
   }
-  @Get("/change_password/:id")
+  @Post("/change_password/:id")
   async changePassword(
     @Param("id") id: string,
     @Res() res,

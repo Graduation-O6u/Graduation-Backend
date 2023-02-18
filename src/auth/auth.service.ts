@@ -59,7 +59,7 @@ export class AuthService {
     await this.mail.sendUserConfirmation(
       name,
       email,
-      `${process.env.BASE_URL}verify-email/${secret}`,
+      `${process.env.BASE_URL}/auth/verify-email/${secret}`,
       code.toString(),
       "confirmation"
     );
@@ -139,34 +139,14 @@ export class AuthService {
   //g
   async verify(id, res, verifyDto) {
     const { code } = verifyDto;
-    let secret = speakeasy.generateSecret({ length: 20 });
-
-    const valid = speakeasy.hotp.verify({
-      secret: secret.base32,
-      encoding: "base32",
-      token: id,
-      counter: 10 * 60,
+    let secret = speakeasy.generateSecret().base32;
+    const exist = await this.prisma.secret.findFirst({
+      where: {
+        url: id,
+      },
     });
-    if (!valid) {
-      const exist = await this.prisma.secret.findFirst({
-        where: {
-          url: id,
-        },
-      });
-      if (!exist) {
-        return ResponseController.notFound(res, "page not Found");
-      } else {
-        await this.prisma.secret.delete({
-          where: {
-            url: id,
-          },
-        });
-        return ResponseController.badRequest(
-          res,
-          "Token is Expired",
-          "Token is Expired"
-        );
-      }
+    if (!exist) {
+      return ResponseController.notFound(res, "page not Found");
     }
 
     const userExist = await this.prisma.secret.findFirst({
@@ -175,6 +155,7 @@ export class AuthService {
       },
       select: { user: true, code: true },
     });
+
     if (!userExist) {
       return ResponseController.badRequest(
         res,
@@ -182,16 +163,10 @@ export class AuthService {
         "user not found"
       );
     }
-    const verify = speakeasy.totp.verify({
-      secret: secret.base32,
-      encoding: "base32",
-      token: code,
-      digits: 5,
-      step: 300,
-    });
-    if (!verify) {
+    if (exist.code !== code) {
       return ResponseController.badRequest(res, "Invalid Code", "Invalid Code");
     }
+
     await this.prisma.user.update({
       where: {
         id: userExist.user.id,
@@ -230,24 +205,18 @@ export class AuthService {
       );
     }
 
-    const secret = speakeasy.generateSecret({ length: 20 });
-    const secret2 = speakeasy.generateSecret().base32;
-    const url = speakeasy.totp({
-      secret: secret.base32,
-      encoding: "base32",
-      time: 10 * 60, // specified in seconds
-    });
+    const secret = speakeasy.generateSecret().base32;
     const code = speakeasy.totp({
-      secret: secret2,
+      secret: secret,
       digits: 5,
       encoding: "base32",
       step: 300,
     });
-
+    //
     await this.mail.sendUserConfirmation(
-      name,
+      emailExist.name,
       email,
-      `${process.env.BASE_URL}reset-password/${url}`,
+      `${process.env.BASE_URL}/auth/reset-password/${secret}`,
       code.toString(),
       "confirmation"
     );
@@ -256,34 +225,14 @@ export class AuthService {
 
   async resetPassword(id, res, verifyDto) {
     const { code } = verifyDto;
-    let secret = speakeasy.generateSecret({ length: 20 });
-
-    const valid = speakeasy.hotp.verify({
-      secret: secret.base32,
-      encoding: "base32",
-      token: id,
-      counter: 10 * 60,
+    let secret = speakeasy.generateSecret().base32;
+    const exist = await this.prisma.secret.findFirst({
+      where: {
+        url: id,
+      },
     });
-    if (!valid) {
-      const exist = await this.prisma.secret.findFirst({
-        where: {
-          url: id,
-        },
-      });
-      if (!exist) {
-        return ResponseController.notFound(res, "page not Found");
-      } else {
-        await this.prisma.secret.delete({
-          where: {
-            url: id,
-          },
-        });
-        return ResponseController.badRequest(
-          res,
-          "Token is Expired",
-          "Token is Expired"
-        );
-      }
+    if (!exist) {
+      return ResponseController.notFound(res, "page not Found");
     }
 
     const userExist = await this.prisma.secret.findFirst({
@@ -299,14 +248,7 @@ export class AuthService {
         "user not found"
       );
     }
-    const verify = speakeasy.totp.verify({
-      secret: secret.base32,
-      encoding: "base32",
-      token: code,
-      digits: 5,
-      step: 300,
-    });
-    if (!verify) {
+    if (!userExist.code !== code) {
       return ResponseController.badRequest(res, "Invalid Code", "Invalid Code");
     }
     await this.prisma.secret.deleteMany({
@@ -314,17 +256,10 @@ export class AuthService {
         userId: userExist.user.id,
       },
     });
-    const url =
-      process.env.BASE_URL +
-      "change_password/" +
-      speakeasy.totp({
-        secret: secret.base32,
-        encoding: "base32",
-        time: 10 * 60, // specified in seconds
-      });
+    const url = process.env.BASE_URL + "/auth/change_password/" + secret;
     await this.prisma.secret.create({
       data: {
-        code: "0",
+        code: code,
         url,
         userId: userExist.user.id,
       },
@@ -335,34 +270,14 @@ export class AuthService {
   }
   async changePassword(id, res, changePasswordDto) {
     const { password } = changePasswordDto;
-    let secret = speakeasy.generateSecret({ length: 20 });
-
-    const valid = speakeasy.hotp.verify({
-      secret: secret.base32,
-      encoding: "base32",
-      token: id,
-      counter: 10 * 60,
+    let secret = speakeasy.generateSecret().base32;
+    const exist = await this.prisma.secret.findFirst({
+      where: {
+        url: id,
+      },
     });
-    if (!valid) {
-      const exist = await this.prisma.secret.findFirst({
-        where: {
-          url: id,
-        },
-      });
-      if (!exist) {
-        return ResponseController.notFound(res, "page not Found");
-      } else {
-        await this.prisma.secret.delete({
-          where: {
-            url: id,
-          },
-        });
-        return ResponseController.badRequest(
-          res,
-          "Token is Expired",
-          "Token is Expired"
-        );
-      }
+    if (!exist) {
+      return ResponseController.notFound(res, "page not Found");
     }
 
     const userExist = await this.prisma.secret.findFirst({

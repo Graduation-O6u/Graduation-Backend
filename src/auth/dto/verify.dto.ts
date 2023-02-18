@@ -4,7 +4,8 @@ import { IsNotEmpty, MaxLength, MinLength } from "class-validator";
 export class verifyDto {
   @IsNotEmpty()
   @ApiProperty()
-  @MinLength(6)
-  @MaxLength(6)
+  @MinLength(5)
+  @MaxLength(5)
   code: string;
 }
+//
