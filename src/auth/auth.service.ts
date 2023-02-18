@@ -49,19 +49,16 @@ export class AuthService {
       },
     });
     const secret = speakeasy.generateSecret({ length: 20 });
-    const secret2 = speakeasy.generateSecret().base32;
+    //const secret2 = speakeasy.generateSecret().base32;
     const url = speakeasy.totp({
       secret: secret.base32,
       encoding: "base32",
       time: 10 * 60, // specified in seconds
     });
-    const code = speakeasy.totp({
-      secret: secret2,
-      digits: 5,
-      encoding: "base32",
-      step: 300,
-    });
+    console.log("-----------");
     console.log(url);
+
+    const code = "222";
     await this.mail.sendUserConfirmation(
       name,
       email,
