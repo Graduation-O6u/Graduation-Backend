@@ -255,7 +255,7 @@ export class AuthService {
         "user not found"
       );
     }
-    if (!userExist.code !== code) {
+    if (userExist.code !== code) {
       return ResponseController.badRequest(res, "Invalid Code", "Invalid Code");
     }
     await this.prisma.secret.deleteMany({
