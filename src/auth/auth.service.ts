@@ -217,6 +217,7 @@ export class AuthService {
         userId: emailExist.id,
         code: code,
         url: secret,
+        type: "PASSWORD_RESET",
       },
     });
     //
@@ -267,8 +268,9 @@ export class AuthService {
     await this.prisma.secret.create({
       data: {
         code: code,
-        url,
+        url: secret,
         userId: userExist.user.id,
+        type: "PASSWORD_RESET",
       },
     });
     return ResponseController.success(res, "Email Verified Successfully", {
