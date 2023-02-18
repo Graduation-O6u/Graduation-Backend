@@ -48,28 +48,25 @@ export class AuthService {
         aboutme: "",
       },
     });
-    const secret = speakeasy.generateSecret({ length: 20 });
-    //const secret2 = speakeasy.generateSecret().base32;
-    const url = speakeasy.totp({
-      secret: secret.base32,
+    const secret = speakeasy.generateSecret().base32;
+    console.log(secret);
+    const code = speakeasy.totp({
+      secret: secret,
+      digits: 5,
       encoding: "base32",
-      time: 10 * 60, // specified in seconds
+      step: 300,
     });
-    console.log("-----------");
-    console.log(url);
-
-    const code = "222";
     await this.mail.sendUserConfirmation(
       name,
       email,
-      `${process.env.BASE_URL}verify-email/${url}`,
+      `${process.env.BASE_URL}verify-email/${secret}`,
       code.toString(),
       "confirmation"
     );
     await this.prisma.secret.create({
       data: {
         userId: newUser.id,
-        url: url,
+        url: secret,
         code: code.toString(),
       },
     });
