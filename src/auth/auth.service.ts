@@ -61,6 +61,7 @@ export class AuthService {
       encoding: "base32",
       step: 300,
     });
+    console.log(url);
     await this.mail.sendUserConfirmation(
       name,
       email,
