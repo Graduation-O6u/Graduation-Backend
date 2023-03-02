@@ -34,4 +34,8 @@ export class createUser {
   @ApiProperty()
   @IsNotEmpty()
   cityId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  cv: string;
 }

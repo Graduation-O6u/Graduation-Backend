@@ -10,7 +10,12 @@ import { MailService } from "src/mail/mail.service";
 import * as speakeasy from "speakeasy";
 import e from "express";
 import { url } from "inspector";
-
+import * as pdfParse from "pdf-parse";
+import { PDFDocument } from "pdf-lib";
+import * as pdfText from "pdf-text";
+import * as pdf from "pdf-text-extract";
+import * as fs from "fs";
+import path, { join } from "path";
 @Injectable()
 export class AuthService {
   constructor(
@@ -18,9 +23,29 @@ export class AuthService {
     private tokenServices: tokenService,
     private mail: MailService
   ) {}
+  async getPdf(file, userId: string) {
+    let readFileSync = fs.readFileSync(file);
+    try {
+      let pdfExtract = await pdfParse(readFileSync);
+      const skills = await this.prisma.skills.findMany();
+      for (let i = 0; i < skills.length; i += 1) {
+        if (pdfExtract.text.includes(skills[i].skill)) {
+          await this.prisma.userSkills.create({
+            data: {
+              userId: userId,
+              skillId: skills[i].id,
+            },
+          });
+        }
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
   // signip
   async signup(res, createUser: createUser) {
-    const { name, email, password, jobId, cityId } = createUser;
+    const { name, email, password, jobId, cityId, cv } = createUser;
+    console.log(name, email, password, jobId, cityId, cv);
     const emailExist = await this.prisma.user.findUnique({
       where: {
         email,
@@ -29,15 +54,22 @@ export class AuthService {
     if (emailExist)
       return ResponseController.conflict(res, "Email already exist");
 
-    const jobExist = await this.prisma.jobs.findUnique({
+    const jobExist = await this.prisma.jobTitle.findUnique({
       where: {
         id: jobId,
       },
     });
 
+    //
+    //
     if (!jobExist) return ResponseController.conflict(res, "Job not exist");
 
     const hashPassword = await bcrypt.hash(password, 8);
+
+    ////
+    const apiSecret = join(process.cwd(), `/uploads/${cv.split("v1/")[1]}`);
+
+    //
     const newUser = await this.prisma.user.create({
       data: {
         name: name,
@@ -45,9 +77,14 @@ export class AuthService {
         password: hashPassword,
         cityId: cityId,
         jobId: jobId,
+        cv: cv,
         aboutme: "",
       },
     });
+    this.getPdf(apiSecret, newUser.id);
+
+    ////////
+
     const secret = speakeasy.generateSecret().base32;
     console.log(secret);
     const code = speakeasy.totp({
@@ -130,7 +167,7 @@ export class AuthService {
       );
   }
   async getJobs(res) {
-    const jobs = await this.prisma.jobs.findMany();
+    const jobs = await this.prisma.jobTitle.findMany();
     return ResponseController.success(res, "get Data Successfully", jobs);
   }
   async addCities(data) {

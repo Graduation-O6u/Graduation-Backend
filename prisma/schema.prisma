@@ -8,31 +8,47 @@ generator client {
 }
 
 model User {
-  id              String      @id @default(uuid())
-  email           String      @unique
-  emailVerified   Boolean     @default(false)
+  id              String       @id @default(uuid())
+  email           String       @unique
+  emailVerified   Boolean      @default(false)
   name            String
-  image           String      @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")
-  backgroundImage String      @default("https://www.solidbackgrounds.com/images/1920x1080/1920x1080-gray-solid-color-background.jpg")
+  image           String       @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")
+  backgroundImage String       @default("https://www.solidbackgrounds.com/images/1920x1080/1920x1080-gray-solid-color-background.jpg")
   password        String?
-  role            Role        @default(USER)
-  createdAt       DateTime    @default(now())
+  role            Role         @default(USER)
+  createdAt       DateTime     @default(now())
   cityId          String
   jobId           String
-  aboutme         String      @db.Text
-  job             Jobs        @relation(name: "JobsToUser", fields: [jobId], references: [id])
+  aboutme         String       @db.Text
+  job             jobTitle     @relation(name: "JobsToUser", fields: [jobId], references: [id])
   secret          secret?
-  cv              String      @default("")
-  baseUser        following[] @relation(name: "user")
-  userFollow      following[] @relation(name: "userFollow")
+  cv              String       @default("")
+  baseUser        following[]  @relation(name: "user")
+  userFollow      following[]  @relation(name: "userFollow")
   Token           Token[]
+  userSkills      userSkills[]
 }
 
-model Jobs {
-  id       String @id @default(uuid())
-  title    String
-  subTitle String @default("")
-  user     User[] @relation(name: "JobsToUser")
+model jobTitle {
+  id    String @id @default(uuid())
+  title String
+  user  User[] @relation(name: "JobsToUser")
+  jobs  jobs[]
+}
+
+model jobs {
+  id                String          @id @default(uuid())
+  jobTitle          jobTitle        @relation(fields: [jobTitleId], references: [id])
+  jobType           jobType
+  jobLocationType   jobLocationType
+  salary            String
+  salaryPer         salaryPer
+  location          companyLocation @relation(fields: [companyLocationId], references: [id])
+  companyLocationId String          @unique
+  company           company         @relation(fields: [companyId], references: [id])
+  companyId         String
+  jobSkills         jobSkills[]
+  jobTitleId        String
 }
 
 model Token {
@@ -57,6 +73,64 @@ model secret {
   createdAt DateTime   @default(now())
 }
 
+model skills {
+  id         String       @id @default(uuid())
+  skill      String
+  userSkills userSkills[]
+  jobSkills  jobSkills[]
+}
+
+model userSkills {
+  id      String @id @default(uuid())
+  userId  String
+  skillId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  skills skills @relation(fields: [skillId], references: [id])
+}
+
+model following {
+  id        String   @id @default(uuid())
+  User      User     @relation(name: "user", fields: [userId], references: [id])
+  userId    String
+  friend    User?    @relation(name: "userFollow", fields: [friendId], references: [id])
+  friendId  String?
+  company   company? @relation(fields: [companyId], references: [id])
+  companyId String?
+}
+
+model company {
+  id              String            @id @default(uuid())
+  name            String
+  subTitle        String
+  about           String
+  marktingValue   String
+  locations       companyLocation[]
+  following       following[]
+  image           String
+  backgroundImage String
+  jobs            jobs[]
+  url             String
+  history         String
+}
+
+model companyLocation {
+  id        String  @id @default(uuid())
+  company   company @relation(fields: [companyId], references: [id])
+  companyId String
+  url       String
+  name      String
+  jobs      jobs?
+}
+
+model jobSkills {
+  id       String @id @default(uuid())
+  job      jobs   @relation(fields: [jobsId], references: [id])
+  jobsId   String
+  skill    skills @relation(fields: [skillsId], references: [id])
+  skillsId String
+}
+
 enum Role {
   USER
   COMPANY
@@ -73,10 +147,21 @@ enum secretType {
   PASSWORD_RESET
 }
 
-model following {
-  id       String @id @default(uuid())
-  User     User   @relation(name: "user", fields: [userId], references: [id])
-  userId   String
-  friend   User   @relation(name: "userFollow", fields: [friendId], references: [id])
-  friendId String
+enum jobLocationType {
+  On_Site
+  Hybrid
+  Remote
+}
+
+enum jobType {
+  Part_Time
+  Full_Time
+  Internship
+}
+
+enum salaryPer {
+  Month
+  Year
+  Day
+  Hour
 }
