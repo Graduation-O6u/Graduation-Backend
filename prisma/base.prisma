@@ -27,6 +27,8 @@ model User {
     userFollow      following[]  @relation(name: "userFollow")
     Token           Token[]
     userSkills      userSkills[]
+    userJobs        userJobs[]
+    applayJobs      applayJobs[]
 }
 
 model jobTitle {
@@ -49,6 +51,35 @@ model jobs {
     companyId         String
     jobSkills         jobSkills[]
     jobTitleId        String
+    createdAt         DateTime        @default(now())
+    userJobs          userJobs[]
+    jobDescription    String          @db.Text
+    applayJobs        applayJobs[]
+}
+
+model applayJobs {
+    id     String  @id @default(uuid())
+    jobs   jobs    @relation(fields: [jobsId], references: [id])
+    jobsId String
+    User   User?   @relation(fields: [userId], references: [id])
+    userId String?
+}
+
+model userJobs {
+    id String @id @default(uuid())
+
+    jobs   jobs   @relation(fields: [jobsId], references: [id])
+    jobsId String
+    User   User   @relation(fields: [userId], references: [id])
+    userId String
+}
+
+model jobSkills {
+    id       String @id @default(uuid())
+    job      jobs   @relation(fields: [jobsId], references: [id])
+    jobsId   String
+    skill    skills @relation(fields: [skillsId], references: [id])
+    skillsId String
 }
 
 model Token {
@@ -103,7 +134,7 @@ model company {
     id              String            @id @default(uuid())
     name            String
     subTitle        String
-    about           String
+    about           String            @db.Text
     marktingValue   String
     locations       companyLocation[]
     following       following[]
@@ -116,19 +147,12 @@ model company {
 
 model companyLocation {
     id        String  @id @default(uuid())
+    code      String
     company   company @relation(fields: [companyId], references: [id])
     companyId String
     url       String
     name      String
     jobs      jobs?
-}
-
-model jobSkills {
-    id       String @id @default(uuid())
-    job      jobs   @relation(fields: [jobsId], references: [id])
-    jobsId   String
-    skill    skills @relation(fields: [skillsId], references: [id])
-    skillsId String
 }
 
 enum Role {

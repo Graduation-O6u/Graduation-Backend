@@ -165,6 +165,21 @@ export class AuthService {
           Object.keys(data).map((key) => data[key])
         )
       );
+    /*   for (let i = 0; i < jobsData.length; i += 1) {
+      await this.prisma.jobTitle.create({
+        data: {
+          title: jobsData[i],
+        },
+      });
+    }
+    for (let i = 0; i < skillsData.length; i += 1) {
+      await this.prisma.skills.create({
+        data: {
+          skill: skillsData[i],
+        },
+      });
+    }
+    return ResponseController.success(res, "suc", null);*/
   }
   async getJobs(res) {
     const jobs = await this.prisma.jobTitle.findMany();
@@ -376,3 +391,6 @@ export class AuthService {
     return ResponseController.success(res, "Session destroyed successfully");
   }
 }
+
+//
+////

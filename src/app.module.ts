@@ -8,9 +8,10 @@ import { UploadModule } from "./upload/upload.module";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { MailModule } from "./mail/mail.module";
 import { MailService } from "./mail/mail.service";
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
-  imports: [AuthModule, UploadModule, MailModule],
+  imports: [AuthModule, UploadModule, MailModule, JobsModule],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
