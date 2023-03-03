@@ -46,7 +46,7 @@ model jobs {
   salary            String
   salaryPer         salaryPer
   location          companyLocation @relation(fields: [companyLocationId], references: [id])
-  companyLocationId String          @unique
+  companyLocationId String
   company           company         @relation(fields: [companyId], references: [id])
   companyId         String
   jobSkills         jobSkills[]
@@ -147,12 +147,12 @@ model company {
 
 model companyLocation {
   id        String  @id @default(uuid())
-  code      String
+  code      String  @db.TinyText
   company   company @relation(fields: [companyId], references: [id])
   companyId String
-  url       String
+  url       String  @db.Text
   name      String
-  jobs      jobs?
+  jobs      jobs[]
 }
 
 enum Role {

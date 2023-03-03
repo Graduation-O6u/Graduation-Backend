@@ -60,8 +60,8 @@ export class JobsService {
         jobType: query.jobType
           ? query.jobType
           : jobType.Full_Time || jobType.Part_Time || jobType.Internship,
-        salary: query.data.salary,
-        company: query.data.salary,
+        salary: query.data.salary || {},
+        company: query.data.company || {},
         location: {
           code: query.jobLocation ? query.jobLocation : userTitle.cityId,
         },
@@ -96,9 +96,10 @@ export class JobsService {
       res,
       "Get Data Successfully",
       RecommendedJobs
-    );
+    ); //
   }
   async FeaturedJobs(res, query) {
+    console.log("hererer");
     const FeaturedJobs = await this.prisma.jobs.findMany({
       skip: (parseInt(query.skip) - 1) * parseInt(query.take || 6) || 0,
       take: +query.take || 6,
@@ -112,23 +113,23 @@ export class JobsService {
         jobType: query.jobType
           ? query.jobType
           : jobType.Full_Time || jobType.Part_Time || jobType.Internship,
-        salary: query.data.salary,
-        company: query.data.salary,
+        salary: query.salary || {},
+        company: query.company || {},
         location: {
-          code: query.jobLocation,
-        },
+          code: query.jobLocation || {},
+        }, ////
       },
-      orderBy: { createdAt: "desc" },
-      select: {
+      orderBy: { createdAt: "desc" }, //
+      include: {
         userJobs: true,
-      },
+      }, ////
     });
     return ResponseController.success(
       res,
       "Get Data Successfully",
       FeaturedJobs
     );
-  }
+  } //
 
   async savedJobs(res, query) {
     const savedJobs = await this.prisma.userJobs.findMany({
@@ -143,10 +144,10 @@ export class JobsService {
           jobType: query.jobType
             ? query.jobType
             : jobType.Full_Time || jobType.Part_Time || jobType.Internship,
-          salary: query.data.salary,
-          company: query.data.salary,
+          salary: query.data.salary || {},
+          company: query.data.company || {},
           location: {
-            code: query.jobLocation,
+            code: query.jobLocation || {},
           },
         },
       },
@@ -154,7 +155,7 @@ export class JobsService {
       take: +query.take || 6,
       select: {
         jobs: true,
-      },
+      }, //
     });
     return ResponseController.success(res, "Get Data Successfully", savedJobs);
   }

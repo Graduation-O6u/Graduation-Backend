@@ -86,14 +86,13 @@ export class AuthService {
     ////////
 
     const secret = speakeasy.generateSecret().base32;
-    console.log(secret);
     const code = speakeasy.totp({
       secret: secret,
       digits: 5,
       encoding: "base32",
       step: 300,
     });
-    await this.mail.sendUserConfirmation(
+    const notFound = await this.mail.sendUserConfirmation(
       name,
       email,
       `${process.env.BASE_URL}/auth/verify-email/${secret}`,
@@ -105,7 +104,7 @@ export class AuthService {
         userId: newUser.id,
         url: secret,
         code: code.toString(),
-      },
+      }, //
     });
     return ResponseController.success(res, "user created Successfully", null);
   }
