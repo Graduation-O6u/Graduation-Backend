@@ -10,7 +10,10 @@ export function fileMimetypeFilter(...mimetypes: string[]) {
     callback: (error: Error | null, acceptFile: boolean) => void
   ) => {
     console.log(file);
-    if (mimetypes.some((m) => file.mimetype.includes(m))) {
+    if (
+      file.originalname.split(".")[file.originalname.split(".").length - 1] ==
+      "pdf"
+    ) {
       callback(null, true);
     } else {
       callback(
