@@ -9,7 +9,7 @@ generator client {
 
 model User {
   id              String       @id @default(uuid())
-  email           String       @unique
+  email           String
   emailVerified   Boolean      @default(false)
   name            String
   image           String       @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")

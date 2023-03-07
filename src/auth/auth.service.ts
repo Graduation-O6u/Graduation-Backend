@@ -110,11 +110,11 @@ export class AuthService {
     return ResponseController.success(res, "user created Successfully", {
       secret,
     });
-  }
-  //ss
+  } ////////
+  //ss//////
   async signin(res, loginDto: loginDto) {
     const { email, password, remember } = loginDto;
-    const emailExist = await this.prisma.user.findUnique({
+    const emailExist = await this.prisma.user.findFirst({
       where: {
         email,
       },
