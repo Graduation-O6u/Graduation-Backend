@@ -42,6 +42,7 @@ export class JobsService {
       select: {
         jobId: true,
         cityId: true,
+
         userSkills: {
           select: {
             id: true,
@@ -60,8 +61,8 @@ export class JobsService {
         jobType: query.jobType
           ? query.jobType
           : jobType.Full_Time || jobType.Part_Time || jobType.Internship,
-        salary: query.data.salary || {},
-        company: query.data.company || {},
+        salary: query.salary || {},
+        company: query.company || {},
         location: {
           code: query.jobLocation ? query.jobLocation : userTitle.cityId,
         },
@@ -121,6 +122,7 @@ export class JobsService {
       },
       orderBy: { createdAt: "desc" }, //
       include: {
+        company: true,
         userJobs: true,
       }, ////
     });
@@ -144,8 +146,8 @@ export class JobsService {
           jobType: query.jobType
             ? query.jobType
             : jobType.Full_Time || jobType.Part_Time || jobType.Internship,
-          salary: query.data.salary || {},
-          company: query.data.company || {},
+          salary: query.salary || {},
+          company: query.company || {},
           location: {
             code: query.jobLocation || {},
           },
