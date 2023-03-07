@@ -70,16 +70,10 @@ export class JobsService {
       skip: (parseInt(query.skip) - 1) * parseInt(query.take || 6) || 0,
       take: +query.take || 6,
       orderBy: { createdAt: "desc" },
-      select: {
-        createdAt: true,
+      include: {
         company: true,
-        salary: true,
         userJobs: true,
-        jobSkills: {
-          select: {
-            id: true,
-          },
-        },
+        jobSkills: true,
       },
     });
     const RecommendedJobs = [];
