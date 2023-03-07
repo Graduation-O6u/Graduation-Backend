@@ -74,6 +74,7 @@ export class JobsService {
         company: true,
         userJobs: true,
         jobSkills: true,
+        location: true,
       },
     });
     const RecommendedJobs = [];
@@ -120,6 +121,7 @@ export class JobsService {
       include: {
         company: true,
         userJobs: true,
+        location: true,
       }, ////
     });
     return ResponseController.success(
