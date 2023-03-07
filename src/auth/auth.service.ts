@@ -46,9 +46,10 @@ export class AuthService {
   async signup(res, createUser: createUser) {
     const { name, email, password, jobId, cityId, cv } = createUser;
     console.log(name, email, password, jobId, cityId, cv);
-    const emailExist = await this.prisma.user.findUnique({
+    const emailExist = await this.prisma.user.findFirst({
       where: {
         email,
+        emailVerified: true,
       },
     });
     if (emailExist)
