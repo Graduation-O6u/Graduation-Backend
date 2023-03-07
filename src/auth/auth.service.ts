@@ -106,7 +106,7 @@ export class AuthService {
         code: code.toString(),
       }, //
     });
-    return ResponseController.success(res, "user created Successfully", null);
+    return ResponseController.success(res, "user created Successfully", secret);
   }
   //ss
   async signin(res, loginDto: loginDto) {
