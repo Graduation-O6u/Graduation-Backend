@@ -89,10 +89,12 @@ export class JobsService {
         if (userTitle.userSkills.includes(jobs[i].jobSkills[j])) x += 1;
       }
       RecommendedJobs.push({
-        ...RecommendedJobs,
+        ...jobs[i],
         similarity: x,
       });
     }
+    RecommendedJobs.sort((a, b) => a.similarity - b.similarity);
+
     return ResponseController.success(
       res,
       "Get Data Successfully",
