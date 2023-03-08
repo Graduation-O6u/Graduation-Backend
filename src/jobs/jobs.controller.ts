@@ -58,7 +58,7 @@ export class JobsController {
   })
   @ApiQuery({
     name: "salary",
-    type: String,
+    enum: ["less than 3000", "less than 6000", "less than 9000"],
     required: false,
   })
   @ApiQuery({

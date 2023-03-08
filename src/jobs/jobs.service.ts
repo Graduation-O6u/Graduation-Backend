@@ -33,8 +33,30 @@ export class JobsService {
       );
     }
     return ResponseController.success(res, "Get data Successfully", job);
-  }
+  } //
   async RecommendedJobs(req, res, query) {
+    let Salary;
+    if (query.salary) {
+      if (
+        query.salary.split(" ")[query.salary.split(" ").length - 1] === "3000"
+      ) {
+        Salary = 3000;
+      } else if (
+        query.salary.split(" ")[query.salary.split(" ").length - 1] === "6000"
+      ) {
+        Salary = 6000;
+      } else if (
+        query.salary.split(" ")[query.salary.split(" ").length - 1] ===
+          "9000" &&
+        query.salary.split(" ")[0] === "less"
+      ) {
+        //
+        Salary = 9000; ////
+      } else {
+        //
+        Salary = 1000000; //
+      }
+    }
     const userTitle = await this.prisma.user.findUnique({
       where: {
         id: req.user.userObject.id,
@@ -61,8 +83,10 @@ export class JobsService {
         jobType: query.jobType
           ? query.jobType
           : jobType.Full_Time || jobType.Part_Time || jobType.Internship,
-        salary: query.salary || {},
-        company: query.company || {},
+        salary: {
+          lte: Salary || 100000000,
+        },
+        companyId: query.company || {},
         location: {
           code: query.jobLocation ? query.jobLocation : userTitle.cityId,
         },
@@ -97,6 +121,27 @@ export class JobsService {
     ); //
   }
   async FeaturedJobs(res, query) {
+    let Salary;
+    if (query.salary) {
+      if (
+        query.salary.split(" ")[query.salary.split(" ").length - 1] === "3000"
+      ) {
+        Salary = 3000;
+      } else if (
+        query.salary.split(" ")[query.salary.split(" ").length - 1] === "6000"
+      ) {
+        Salary = 6000;
+      } else if (
+        query.salary.split(" ")[query.salary.split(" ").length - 1] ===
+          "9000" &&
+        query.salary.split(" ")[0] === "less"
+      ) {
+        //
+        Salary = 9000;
+      } else {
+        Salary = 1000000; //
+      }
+    }
     console.log("hererer");
     const FeaturedJobs = await this.prisma.jobs.findMany({
       skip: (parseInt(query.skip) - 1) * parseInt(query.take || 6) || 0,
@@ -111,8 +156,10 @@ export class JobsService {
         jobType: query.jobType
           ? query.jobType
           : jobType.Full_Time || jobType.Part_Time || jobType.Internship,
-        salary: query.salary || {},
-        company: query.company || {},
+        salary: {
+          lte: Salary || 100000000,
+        },
+        companyId: query.company || {},
         location: {
           code: query.jobLocation || {},
         }, ////
@@ -132,6 +179,27 @@ export class JobsService {
   } //
 
   async savedJobs(res, query) {
+    let Salary;
+    if (query.salary) {
+      if (
+        query.salary.split(" ")[query.salary.split(" ").length - 1] === "3000"
+      ) {
+        Salary = 3000;
+      } else if (
+        query.salary.split(" ")[query.salary.split(" ").length - 1] === "6000"
+      ) {
+        Salary = 6000;
+      } else if (
+        query.salary.split(" ")[query.salary.split(" ").length - 1] ===
+          "9000" &&
+        query.salary.split(" ")[0] === "less"
+      ) {
+        //
+        Salary = 9000;
+      } else {
+        Salary = 1000000; //
+      }
+    }
     const savedJobs = await this.prisma.userJobs.findMany({
       where: {
         jobs: {
@@ -144,10 +212,12 @@ export class JobsService {
           jobType: query.jobType
             ? query.jobType
             : jobType.Full_Time || jobType.Part_Time || jobType.Internship,
-          salary: query.salary || {},
-          company: query.company || {},
+          salary: {
+            lte: Salary || 100000000,
+          },
+          companyId: query.company || {},
           location: {
-            code: query.jobLocation || {},
+            code: query.jobLocation || {}, //
           },
         },
       },
@@ -155,7 +225,7 @@ export class JobsService {
       take: +query.take || 6,
       select: {
         jobs: true,
-      }, //
+      }, ////
     });
     return ResponseController.success(res, "Get Data Successfully", savedJobs);
   }

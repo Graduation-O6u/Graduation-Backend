@@ -43,7 +43,7 @@ model jobs {
   jobTitle          jobTitle        @relation(fields: [jobTitleId], references: [id])
   jobType           jobType
   jobLocationType   jobLocationType
-  salary            String
+  salary            Int
   salaryPer         salaryPer
   location          companyLocation @relation(fields: [companyLocationId], references: [id])
   companyLocationId String
