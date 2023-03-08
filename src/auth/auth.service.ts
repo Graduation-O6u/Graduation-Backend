@@ -118,8 +118,26 @@ export class AuthService {
       where: {
         email,
       },
-      include: {
+      select: {
         job: true,
+        id: true,
+        email: true,
+        emailVerified: true,
+        name: true,
+        image: true,
+        password: true,
+        role: true,
+        createdAt: true,
+        cityId: true,
+        jobId: true,
+        aboutme: true,
+        backgroundImage: true,
+        cv: true,
+        _count: {
+          select: {
+            userFollow: true,
+          },
+        },
       },
     });
     if (!emailExist)

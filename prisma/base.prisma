@@ -12,7 +12,7 @@ model User {
     email           String
     emailVerified   Boolean      @default(false)
     name            String
-    image           String       @default("https://res.cloudinary.com/lms07/image/upload/v1645954589/avatar/6214b94ad832b0549b436264_avatar1645954588291.png")
+    image           String       @default("https://googleflutter.com/sample_image.jpg")
     backgroundImage String       @default("https://www.solidbackgrounds.com/images/1920x1080/1920x1080-gray-solid-color-background.jpg")
     password        String?
     role            Role         @default(USER)
