@@ -131,6 +131,8 @@ export class AuthService {
         cityId: true,
         jobId: true,
         aboutme: true,
+        github: true,
+        behance: true,
         backgroundImage: true,
         cv: true,
 
