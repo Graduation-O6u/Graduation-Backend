@@ -146,7 +146,7 @@ export class AuthService {
         userId: emailExist.id,
       },
     });
-    var city;
+    var cities;
     if (!emailExist)
       return ResponseController.badRequest(
         res,
@@ -157,12 +157,13 @@ export class AuthService {
       "https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/index.json"
     )
       .then((response) => response.json())
-      .then(
-        (data) =>
-          (city = Object.keys(data).filter(
-            (key) => data[key]["code"] == emailExist.cityId
-          ))
-      );
+      .then((data) => (cities = Object.keys(data).map((key) => data[key])));
+    var city;
+    cities.forEach((element) => {
+      if (element["code"] == emailExist.cityId) {
+        city = element["name"];
+      }
+    });
     const validPassword = await bcrypt.compare(password, emailExist.password);
     if (!validPassword) {
       return ResponseController.badRequest(
@@ -170,13 +171,13 @@ export class AuthService {
         "IncorrectCredentials",
         "Incorrect Email or Password"
       );
-    }
+    } //
     if (!emailExist.emailVerified) {
       return ResponseController.badRequest(
         res,
         "EmailNotVerified",
         "Email not Verified"
-      );
+      ); ////
     }
     const refreshToken = await this.tokenServices.createRefresh(
       emailExist,
