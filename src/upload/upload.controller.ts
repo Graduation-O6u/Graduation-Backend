@@ -20,7 +20,7 @@ export class UploadController {
   @Post("file")
   @ApiAssetFile("file", true)
   uploadFile(@UploadedFile(ParseFile) file): Observable<{ url: string }> {
-    console.log(file);
+    console.log(__dirname);
     return of({
       url: `${process.env.BASE_URL}/api/v1/${file.path
         .replace("uploads\\", "")

@@ -25,7 +25,7 @@ export class AppService {
   async sendFile(res, id) {
     console.log(id.split("v1/")[0]);
     console.log(__dirname);
-    const filePath = join(__dirname, "..", `/uploads/${id.split("v1/")[0]}`);
+    const filePath = join(__dirname, "..", `/${id.split("v1/")[0]}`);
 
     res.sendFile(filePath, function (err) {
       if (err) {
