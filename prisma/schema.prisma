@@ -25,6 +25,8 @@ model User {
   cv              String       @default("")
   baseUser        following[]  @relation(name: "user")
   userFollow      following[]  @relation(name: "userFollow")
+  github          String       @default("")
+  behance         String       @default("")
   Token           Token[]
   userSkills      userSkills[]
   userJobs        userJobs[]
