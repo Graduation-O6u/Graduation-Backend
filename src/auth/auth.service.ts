@@ -140,6 +140,11 @@ export class AuthService {
         },
       },
     });
+    const view = await this.prisma.views.count({
+      where: {
+        userId: emailExist.id,
+      },
+    });
     if (!emailExist)
       return ResponseController.badRequest(
         res,
@@ -171,6 +176,7 @@ export class AuthService {
     );
     return ResponseController.success(res, "Login successfully", {
       user: emailExist,
+      view,
       accessToken,
       refreshToken: refreshToken.refreshToken,
     });

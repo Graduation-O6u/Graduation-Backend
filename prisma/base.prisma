@@ -29,6 +29,17 @@ model User {
     userSkills      userSkills[]
     userJobs        userJobs[]
     applayJobs      applayJobs[]
+    user            views[]      @relation(name: "user")
+    view            views[]      @relation(name: "view")
+}
+
+model views {
+    userId String
+    viewId String
+    User   User   @relation(name: "user", fields: [userId], references: [id])
+    view   User   @relation(name: "view", fields: [viewId], references: [id])
+
+    @@id([userId, viewId])
 }
 
 model jobTitle {
