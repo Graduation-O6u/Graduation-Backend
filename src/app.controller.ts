@@ -16,7 +16,7 @@ export class AppController {
   getCompany(@Res() res) {
     return this.appService.getCompany(res);
   }
-  @Get("/api/v1/upload/:id")
+  @Get("/api/v1/uploads/:id")
   sendFile(@Res() res, @Param("id") id: string) {
     return this.appService.sendFile(res, id);
   }
