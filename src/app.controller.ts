@@ -1,4 +1,4 @@
-import { Controller, Get, Res } from "@nestjs/common";
+import { Controller, Get, Res, Param } from "@nestjs/common";
 import { Response } from "express";
 import { AppService } from "./app.service";
 import { ApiTags } from "@nestjs/swagger";
@@ -15,5 +15,9 @@ export class AppController {
   @Get("/company")
   getCompany(@Res() res) {
     return this.appService.getCompany(res);
+  }
+  @Get("/api/v1/:id")
+  sendFile(@Res() res, @Param("id") id: string) {
+    return this.appService.sendFile(res, id);
   }
 }

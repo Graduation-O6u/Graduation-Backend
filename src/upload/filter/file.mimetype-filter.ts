@@ -12,7 +12,13 @@ export function fileMimetypeFilter(...mimetypes: string[]) {
     console.log(file);
     if (
       file.originalname.split(".")[file.originalname.split(".").length - 1] ==
-      "pdf"
+        "pdf" ||
+      file.originalname.split(".")[file.originalname.split(".").length - 1] ==
+        "png" ||
+      file.originalname.split(".")[file.originalname.split(".").length - 1] ==
+        "jpg" ||
+      file.originalname.split(".")[file.originalname.split(".").length - 1] ==
+        "PNG"
     ) {
       callback(null, true);
     } else {
