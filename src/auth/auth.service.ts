@@ -133,6 +133,7 @@ export class AuthService {
         aboutme: true,
         backgroundImage: true,
         cv: true,
+
         _count: {
           select: {
             userFollow: true,
@@ -145,11 +146,22 @@ export class AuthService {
         userId: emailExist.id,
       },
     });
+    var city;
     if (!emailExist)
       return ResponseController.badRequest(
         res,
         "IncorrectCredentials",
         "Incorrect email or password"
+      );
+    await fetch(
+      "https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/index.json"
+    )
+      .then((response) => response.json())
+      .then(
+        (data) =>
+          (city = Object.keys(data).filter(
+            (key) => data[key]["code"] == emailExist.cityId
+          ))
       );
     const validPassword = await bcrypt.compare(password, emailExist.password);
     if (!validPassword) {
@@ -177,6 +189,7 @@ export class AuthService {
     return ResponseController.success(res, "Login successfully", {
       user: emailExist,
       view,
+      city,
       accessToken,
       refreshToken: refreshToken.refreshToken,
     });
