@@ -24,7 +24,7 @@ export class AppService {
   }
   async sendFile(res, id) {
     console.log(id.split("uploads/")[0]);
-    console.log(__dirname);
+
     const filePath = join(
       __dirname,
       "..",

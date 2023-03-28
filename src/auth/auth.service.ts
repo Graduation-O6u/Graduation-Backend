@@ -143,18 +143,19 @@ export class AuthService {
         },
       },
     });
-    const view = await this.prisma.views.count({
-      where: {
-        userId: emailExist.id,
-      },
-    });
-    var cities;
     if (!emailExist)
       return ResponseController.badRequest(
         res,
         "IncorrectCredentials",
         "Incorrect email or password"
       );
+    const view = await this.prisma.views.count({
+      where: {
+        userId: emailExist.id,
+      },
+    });
+    var cities;
+
     await fetch(
       "https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/index.json"
     )
