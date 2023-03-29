@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { jobLocationType, jobType } from "@prisma/client";
 import { PrismaService } from "src/prisma.service";
 import { ResponseController } from "src/static/responses";
 
@@ -77,12 +76,10 @@ export class JobsService {
         jobTitleId: query.jobTitle ? query.jobTitle : userTitle.jobId,
         jobLocationType: query.wayOfWork
           ? query.wayOfWork
-          : jobLocationType.Hybrid ||
-            jobLocationType.On_Site ||
-            jobLocationType.Remote,
+          : "Hybrid" || "On_Site" || "Remote",
         jobType: query.jobType
           ? query.jobType
-          : jobType.Full_Time || jobType.Part_Time || jobType.Internship,
+          : "Full_Time" || "Part_Time" || "Internship",
         salary: {
           lte: Salary || 100000000,
         },
@@ -150,12 +147,10 @@ export class JobsService {
         jobTitleId: query.jobTitle,
         jobLocationType: query.wayOfWork
           ? query.wayOfWork
-          : jobLocationType.Hybrid ||
-            jobLocationType.On_Site ||
-            jobLocationType.Remote,
+          : "Hybrid" || "On_Site" || "Remote",
         jobType: query.jobType
           ? query.jobType
-          : jobType.Full_Time || jobType.Part_Time || jobType.Internship,
+          : "Full_Time" || "Part_Time" || "Internship",
         salary: {
           lte: Salary || 100000000,
         },
@@ -206,12 +201,10 @@ export class JobsService {
           jobTitleId: query.jobTitle,
           jobLocationType: query.wayOfWork
             ? query.wayOfWork
-            : jobLocationType.Hybrid ||
-              jobLocationType.On_Site ||
-              jobLocationType.Remote,
+            : "Hybrid " || "On_Site" || "Remote",
           jobType: query.jobType
             ? query.jobType
-            : jobType.Full_Time || jobType.Part_Time || jobType.Internship,
+            : "Full_Time" || "Part_Time" || "Internship",
           salary: {
             lte: Salary || 100000000,
           },

@@ -1,16 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { TokenType, User } from "@prisma/client";
 import { PrismaService } from "src/prisma.service";
 import * as jwt from "jsonwebtoken";
 
 @Injectable()
 export class tokenService {
   constructor(private prisma: PrismaService) {}
-  async createAccess(user: User, refreshId: string) {
+  async createAccess(user, refreshId: string) {
     const tokenId = await this.prisma.token.create({
       data: {
         userId: user.id,
-        type: TokenType.AccessToken,
+        type: "AccessToken",
         refreshId,
       },
     });
@@ -21,11 +20,11 @@ export class tokenService {
     );
     return accessToken;
   }
-  async createRefresh(user: User, valid: boolean) {
+  async createRefresh(user, valid: boolean) {
     const tokenId = await this.prisma.token.create({
       data: {
         userId: user.id,
-        type: TokenType.RefreshToken,
+        type: "RefreshToken",
       },
     });
     const refreshToken = jwt.sign(
@@ -33,7 +32,7 @@ export class tokenService {
         userId: user.id,
         id: tokenId,
         role: user.role,
-        type: TokenType.RefreshToken,
+        type: "RefreshToken",
       },
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: valid ? 30 : 1 * 24 * 60 * 60 }

@@ -15,7 +15,6 @@ import {
   Query,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { jobLocationType, jobType } from "@prisma/client";
 @Controller("job")
 @ApiTags("job")
 export class JobsController {
@@ -79,8 +78,8 @@ export class JobsController {
       type: string;
       jobTitle?: string;
       jobLocation?: string;
-      wayOfWork?: jobLocationType;
-      jobType?: jobType;
+      wayOfWork?: string;
+      jobType?: string;
       salary?: string;
       comapny?: string;
     }
