@@ -18,9 +18,8 @@ async function bootstrap() {
   const prismaService = app.get(PrismaService);
   await prismaService.enableShutDownHooks(app);
   SwaggerInit.init(app);
-  await app.listen(0);
-  const url = await app.getUrl();
-  console.log(`Application is running on: ${url}`);
+  await app.listen(process.env.PORT);
+  console.log(`Application is running on: ${process.env.PORT}`);
   console.log(`Swagger Docomentation On: ${await app.getUrl()}/api/v1/docs`);
 }
 
