@@ -14,11 +14,9 @@ export class editUserDto {
   name: string;
 
   @ApiProperty()
-  @IsUrl()
   github: string;
 
   @ApiProperty()
-  @IsUrl()
   behance: string;
 
   @ApiProperty()
