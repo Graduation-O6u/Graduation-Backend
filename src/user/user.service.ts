@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Res } from "@nestjs/common";
 import { PrismaService } from "src/prisma.service";
 import { ResponseController } from "src/util/response.controller";
 
@@ -74,6 +74,7 @@ export class UserService {
         cv,
       },
     });
+    return ResponseController.success(res, "data get successfully", null);
   }
   async deleteCv(req, res) {
     await this.prisma.user.update({
@@ -84,5 +85,6 @@ export class UserService {
         cv: "",
       },
     });
+    return ResponseController.success(res, "data get successfully", null);
   }
 }
