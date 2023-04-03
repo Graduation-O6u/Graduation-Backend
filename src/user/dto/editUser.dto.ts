@@ -30,4 +30,6 @@ export class editUserDto {
 
   @ApiProperty()
   cv: string;
+  @ApiProperty()
+  image: string;
 }

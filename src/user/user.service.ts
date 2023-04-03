@@ -58,7 +58,7 @@ export class UserService {
     });
   }
   async editUser(req, res, editUserDto) {
-    const { name, github, behance, about, cityId, jobId, cv } = editUserDto;
+    const { name, github, behance, about, cityId, jobId, cv, image } = editUserDto;
 
     await this.prisma.user.update({
       where: {
@@ -72,6 +72,7 @@ export class UserService {
         cityId,
         jobId,
         cv,
+        image,
       },
     });
     return ResponseController.success(res, "data get successfully", null);
