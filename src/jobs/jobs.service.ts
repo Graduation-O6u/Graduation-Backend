@@ -85,7 +85,7 @@ export class JobsService {
           code: query.jobLocation ? query.jobLocation : userTitle.cityId,
         },
       },
-      skip: parseInt(query.skip) * parseInt(query.take || 6) || 0,
+      skip: parseInt(query.skip) || 0,
       take: +query.take || 6,
       orderBy: { createdAt: "desc" },
       include: {
@@ -203,7 +203,7 @@ export class JobsService {
           },
         },
       },
-      skip: parseInt(query.skip) * parseInt(query.take || 6) || 0,
+      skip: parseInt(query.skip) || 0,
       take: +query.take || 6,
       select: {
         jobs: true,
