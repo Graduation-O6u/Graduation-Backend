@@ -75,12 +75,8 @@ export class JobsService {
     let jobs = await this.prisma.jobs.findMany({
       where: {
         jobTitleId: query.jobTitle ? query.jobTitle : userTitle.jobId,
-        jobLocationType: query.wayOfWork
-          ? query.wayOfWork
-          : "Hybrid" || "On_Site" || "Remote",
-        jobType: query.jobType
-          ? query.jobType
-          : "Full_Time" || "Part_Time" || "Internship",
+        jobLocationType: query.wayOfWork || {},
+        jobType: query.jobType || {},
         salary: {
           lte: Salary || 100000000,
         },
@@ -89,7 +85,7 @@ export class JobsService {
           code: query.jobLocation ? query.jobLocation : userTitle.cityId,
         },
       },
-      skip: parseInt(query.skip) - 1 || 0,
+      skip: parseInt(query.skip) * parseInt(query.take || 6) || 0,
       take: +query.take || 6,
       orderBy: { createdAt: "desc" },
       include: {
@@ -139,18 +135,14 @@ export class JobsService {
         Salary = 1000000; //
       }
     }
-    console.log("hererer");
+    console.log(query);
     const FeaturedJobs = await this.prisma.jobs.findMany({
       skip: parseInt(query.skip) || 0,
       take: +query.take || 6,
       where: {
         jobTitleId: query.jobTitle,
-        jobLocationType: query.wayOfWork
-          ? query.wayOfWork
-          : "Hybrid" || "On_Site" || "Remote",
-        jobType: query.jobType
-          ? query.jobType
-          : "Full_Time" || "Part_Time" || "Internship",
+        jobLocationType: query.wayOfWork || {},
+        jobType: query.jobType || {},
         salary: {
           lte: Salary || 100000000,
         },
@@ -200,12 +192,8 @@ export class JobsService {
       where: {
         jobs: {
           jobTitleId: query.jobTitle,
-          jobLocationType: query.wayOfWork
-            ? query.wayOfWork
-            : "Hybrid " || "On_Site" || "Remote",
-          jobType: query.jobType
-            ? query.jobType
-            : "Full_Time" || "Part_Time" || "Internship",
+          jobLocationType: query.wayOfWork || {},
+          jobType: query.jobType || {},
           salary: {
             lte: Salary || 100000000,
           },
@@ -215,7 +203,7 @@ export class JobsService {
           },
         },
       },
-      skip: parseInt(query.skip) || 0,
+      skip: parseInt(query.skip) * parseInt(query.take || 6) || 0,
       take: +query.take || 6,
       select: {
         jobs: true,
