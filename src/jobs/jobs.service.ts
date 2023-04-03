@@ -203,8 +203,13 @@ export class JobsService {
         },
       },
 
-      select: {
-        jobs: true,
+      include: {
+        jobs: {
+          include: {
+            company: true,
+            location: true,
+          },
+        },
       }, ////
     });
     const size = await this.prisma.userJobs.count({
