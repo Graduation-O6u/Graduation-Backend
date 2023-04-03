@@ -330,6 +330,13 @@ export class JobsService {
         ],
       },
       take: 3,
+      include: {
+        jobTitle: true,
+
+        company: true,
+        userJobs: true,
+        location: true,
+      },
     });
     return ResponseController.success(res, "Get data successfully", jobs);
   }
