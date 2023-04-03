@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma.service";
 import { ResponseController } from "src/static/responses";
+import { searchDto } from "./dto/search.dto";
 
 @Injectable()
 export class JobsService {
@@ -299,11 +300,37 @@ export class JobsService {
     return ResponseController.success(res, "Applay for Job Successfully");
   }
 
-  async serach(req, res) {
+  async search(req, res, searchDto) {
+    const { searchData } = searchDto;
+    console.log(searchData);
     const jobs = await this.prisma.jobs.findMany({
       where: {
-        OR: [],
+        OR: [
+          {
+            jobTitle: {
+              title: {
+                startsWith: searchData,
+              },
+            },
+          },
+          {
+            company: {
+              name: {
+                startsWith: searchData,
+              },
+            },
+          },
+          {
+            company: {
+              subTitle: {
+                startsWith: searchData,
+              },
+            },
+          },
+        ],
       },
+      take: 3,
     });
+    return ResponseController.success(res, "Get data successfully", jobs);
   }
 }

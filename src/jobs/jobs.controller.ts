@@ -15,6 +15,7 @@ import {
   Query,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
+import { searchDto } from "./dto/search.dto";
 @Controller("job")
 @ApiTags("job")
 export class JobsController {
@@ -99,7 +100,16 @@ export class JobsController {
   async bookmark(@Req() req, @Res() res, @Param("id") id: string) {
     return this.jobsService.bookmark(req, res, id);
   }
-
+  @ApiBasicAuth("Access Token")
+  @UseGuards(AuthGuard("jwt"))
+  @Post("/search")
+  async search(
+    @Req() req,
+    @Res() res,
+    @Body(ValidationPipe) searchDto: searchDto
+  ) {
+    return this.jobsService.search(req, res, searchDto);
+  }
   @ApiBasicAuth("Access Token")
   @UseGuards(AuthGuard("jwt"))
   @Post("/:id")
