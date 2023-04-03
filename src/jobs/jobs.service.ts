@@ -89,7 +89,7 @@ export class JobsService {
           code: query.jobLocation ? query.jobLocation : userTitle.cityId,
         },
       },
-      skip: (parseInt(query.skip) - 1) * parseInt(query.take || 6) || 0,
+      skip: parseInt(query.skip) - 1 || 0,
       take: +query.take || 6,
       orderBy: { createdAt: "desc" },
       include: {
@@ -141,7 +141,7 @@ export class JobsService {
     }
     console.log("hererer");
     const FeaturedJobs = await this.prisma.jobs.findMany({
-      skip: (parseInt(query.skip) - 1) * parseInt(query.take || 6) || 0,
+      skip: parseInt(query.skip) - 1 || 0,
       take: +query.take || 6,
       where: {
         jobTitleId: query.jobTitle,
@@ -215,7 +215,7 @@ export class JobsService {
           },
         },
       },
-      skip: (parseInt(query.skip) - 1) * parseInt(query.take || 6) || 0,
+      skip: parseInt(query.skip) - 1 || 0,
       take: +query.take || 6,
       select: {
         jobs: true,
