@@ -12,7 +12,7 @@ export class JobsService {
     } else if (query.type == "RecommendedJobs") {
       return this.RecommendedJobs(req, res, query);
     } else {
-      return this.savedJobs(res, query);
+      return this.savedJobs(req, res, query);
     }
   }
   async job(req, res, id) {
@@ -71,6 +71,7 @@ export class JobsService {
         },
       },
     });
+    const size = await this.prisma.jobs.count({});
     let jobs = await this.prisma.jobs.findMany({
       where: {
         jobTitleId: query.jobTitle ? query.jobTitle : userTitle.jobId,
@@ -111,11 +112,10 @@ export class JobsService {
     }
     RecommendedJobs.sort((a, b) => a.similarity - b.similarity);
 
-    return ResponseController.success(
-      res,
-      "Get Data Successfully",
-      RecommendedJobs
-    ); //
+    return ResponseController.success(res, "Get Data Successfully", {
+      RecommendedJobs,
+      size,
+    }); //
   }
   async FeaturedJobs(res, query) {
     let Salary;
@@ -166,14 +166,15 @@ export class JobsService {
         location: true,
       }, ////
     });
-    return ResponseController.success(
-      res,
-      "Get Data Successfully",
-      FeaturedJobs
-    );
+    const size = await this.prisma.jobs.count({});
+
+    return ResponseController.success(res, "Get Data Successfully", {
+      FeaturedJobs,
+      size,
+    });
   } //
 
-  async savedJobs(res, query) {
+  async savedJobs(req, res, query) {
     let Salary;
     if (query.salary) {
       if (
@@ -220,7 +221,15 @@ export class JobsService {
         jobs: true,
       }, ////
     });
-    return ResponseController.success(res, "Get Data Successfully", savedJobs);
+    const size = await this.prisma.userJobs.count({
+      where: {
+        userId: req.user.userObject.id,
+      },
+    });
+    return ResponseController.success(res, "Get Data Successfully", {
+      savedJobs,
+      size,
+    });
   }
 
   async bookmark(req, res, id) {
