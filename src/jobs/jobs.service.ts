@@ -88,6 +88,8 @@ export class JobsService {
 
       orderBy: { createdAt: "desc" },
       include: {
+        jobTitle: true,
+
         company: true,
         userJobs: true,
         jobSkills: true,
@@ -152,6 +154,8 @@ export class JobsService {
       },
       orderBy: { createdAt: "desc" }, //
       include: {
+        jobTitle: true,
+
         company: true,
         userJobs: true,
         location: true,
@@ -189,6 +193,7 @@ export class JobsService {
     }
     const savedJobs = await this.prisma.userJobs.findMany({
       where: {
+        userId: req.user.userObject.id,
         jobs: {
           jobTitleId: query.jobTitle,
           jobLocationType: query.wayOfWork || {},
@@ -208,6 +213,7 @@ export class JobsService {
           include: {
             company: true,
             location: true,
+            jobTitle: true,
           },
         },
       }, ////
@@ -291,5 +297,13 @@ export class JobsService {
       },
     });
     return ResponseController.success(res, "Applay for Job Successfully");
+  }
+
+  async serach(req, res) {
+    const jobs = await this.prisma.jobs.findMany({
+      where: {
+        OR: [],
+      },
+    });
   }
 }
