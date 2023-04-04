@@ -326,7 +326,9 @@ export class AuthService {
       code.toString(),
       "confirmation"
     );
-    return ResponseController.success(res, "code sent Successfully", null);
+    return ResponseController.success(res, "code sent Successfully", {
+      secret,
+    });
   }
 
   async resetPassword(id, res, verifyDto) {
@@ -373,6 +375,7 @@ export class AuthService {
     });
     return ResponseController.success(res, "Email Verified Successfully", {
       url,
+      secret,
     });
   }
   async changePassword(id, res, changePasswordDto) {
