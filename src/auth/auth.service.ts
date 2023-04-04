@@ -93,7 +93,7 @@ export class AuthService {
       encoding: "base32",
       step: 300,
     });
-    const notFound = await this.mail.sendUserConfirmation(
+    await this.mail.sendUserConfirmation(
       name,
       email,
       `${process.env.BASE_URL}/auth/verify-email/${secret}`,

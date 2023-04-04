@@ -8,14 +8,13 @@ import { join } from "path";
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: "smtp.sendgrid.net",
+        host: "smtp.titan.email",
+        port: 587,
+        secure: false,
         auth: {
-          user: process.env.MAIL_USER,
-          pass: process.env.MAIL_PASS,
+          user: "fahd@prefectjob.com",
+          pass: "xX<_%i59Fp}7h|R",
         },
-      },
-      defaults: {
-        from: `${process.env.MAIL_FROM_NAME} <${process.env.MAIL_FROM_EMAIL}>`,
       },
     }),
   ],

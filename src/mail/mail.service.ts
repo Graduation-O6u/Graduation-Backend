@@ -13,7 +13,7 @@ export class MailService {
     template: string
   ) {
     await this.mailerService.sendMail({
-      from: "fhakem75@gmail.com",
+      from: "fahd@prefectjob.com",
       to: email,
       // from: '"Support Team" <support@example.com>', // override default from
       subject: "Welcome to Nice App! Confirm your Email",
