@@ -9,7 +9,7 @@ export class JobsService {
 
   async jobs(req, res, query) {
     if (query.type == "FeaturedJobs") {
-      return this.FeaturedJobs(res, query);
+      return this.FeaturedJobs(req, res, query);
     } else if (query.type == "RecommendedJobs") {
       return this.RecommendedJobs(req, res, query);
     } else {
@@ -90,10 +90,19 @@ export class JobsService {
       orderBy: { createdAt: "desc" },
       include: {
         jobTitle: true,
-
+        jobSkills: {
+          include: {
+            skill: true,
+          },
+        },
+        applayJobs: {
+          where: {
+            userId: req.user.userObject.id,
+          },
+        },
         company: true,
         userJobs: true,
-        jobSkills: true,
+
         location: true,
       },
     });
@@ -115,7 +124,7 @@ export class JobsService {
       size,
     }); //
   }
-  async FeaturedJobs(res, query) {
+  async FeaturedJobs(req, res, query) {
     let Salary;
     if (query.salary) {
       if (
@@ -156,7 +165,16 @@ export class JobsService {
       orderBy: { createdAt: "desc" }, //
       include: {
         jobTitle: true,
-
+        jobSkills: {
+          include: {
+            skill: true,
+          },
+        },
+        applayJobs: {
+          where: {
+            userId: req.user.userObject.id,
+          },
+        },
         company: true,
         userJobs: true,
         location: true,
@@ -212,6 +230,16 @@ export class JobsService {
       include: {
         jobs: {
           include: {
+            jobSkills: {
+              include: {
+                skill: true,
+              },
+            },
+            applayJobs: {
+              where: {
+                userId: req.user.userObject.id,
+              },
+            },
             company: true,
             location: true,
             jobTitle: true,
@@ -332,7 +360,16 @@ export class JobsService {
       take: 3,
       include: {
         jobTitle: true,
-
+        jobSkills: {
+          include: {
+            skill: true,
+          },
+        },
+        applayJobs: {
+          where: {
+            userId: req.user.userObject.id,
+          },
+        },
         company: true,
         userJobs: true,
         location: true,
