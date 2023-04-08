@@ -49,7 +49,6 @@ export class AuthService {
     const emailExist = await this.prisma.user.findFirst({
       where: {
         email,
-        emailVerified: true,
       },
     });
     if (emailExist)
@@ -149,6 +148,13 @@ export class AuthService {
         "IncorrectCredentials",
         "Incorrect email or password"
       );
+    if (!emailExist.emailVerified) {
+      return ResponseController.badRequest(
+        res,
+        "Email Not Verified",
+        "Email Not Verified"
+      );
+    }
     const view = await this.prisma.views.count({
       where: {
         userId: emailExist.id,
