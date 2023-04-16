@@ -52,6 +52,7 @@ export class UserService {
         city = element["name"];
       }
     });
+    emailExist["city"] = city;
     return ResponseController.success(res, "Get data Successfully", {
       user: emailExist,
       view,
