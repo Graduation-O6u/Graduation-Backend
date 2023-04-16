@@ -15,6 +15,8 @@ export class UserService {
       select: {
         job: true,
         id: true,
+        github: true,
+        behance: true,
         email: true,
         emailVerified: true,
         name: true,
@@ -27,7 +29,16 @@ export class UserService {
         aboutme: true,
         backgroundImage: true,
         cv: true,
-
+        userSkills: {
+          select: {
+            skills: {
+              select: {
+                id: true,
+                skill: true,
+              },
+            },
+          },
+        },
         _count: {
           select: {
             userFollow: true,
@@ -56,7 +67,6 @@ export class UserService {
     return ResponseController.success(res, "Get data Successfully", {
       user: emailExist,
       view,
-      cities,
     });
   }
   async editUser(req, res, editUserDto) {
