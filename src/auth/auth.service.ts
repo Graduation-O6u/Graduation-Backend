@@ -154,7 +154,7 @@ export class AuthService {
         role: Role.COMPANY,
       },
     });
-    const companyDetails = await this.prisma.companyDetails.create({
+    await this.prisma.companyDetails.create({
       data: {
         companyId: newUser.id,
         history,
