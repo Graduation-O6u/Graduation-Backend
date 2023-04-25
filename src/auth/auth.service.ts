@@ -151,15 +151,7 @@ export class AuthService {
         password: hashPassword,
         jobId: jobId,
         aboutme: "",
-        role: Role.COMPANY,
-      },
-    });
-    await this.prisma.companyDetails.create({
-      data: {
-        companyId: newUser.id,
-        history,
-        marketingValue,
-        websiteUrl,
+        role: "COMPANY",
       },
     });
 
