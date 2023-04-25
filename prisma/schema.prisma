@@ -8,31 +8,40 @@ generator client {
 }
 
 model User {
-  id              String       @id @default(uuid())
+  id              String          @id @default(uuid())
   email           String
-  emailVerified   Boolean      @default(false)
+  emailVerified   Boolean         @default(false)
   name            String
-  image           String       @default("https://googleflutter.com/sample_image.jpg")
-  backgroundImage String       @default("https://www.solidbackgrounds.com/images/1920x1080/1920x1080-gray-solid-color-background.jpg")
+  image           String          @default("https://googleflutter.com/sample_image.jpg")
+  backgroundImage String          @default("https://www.solidbackgrounds.com/images/1920x1080/1920x1080-gray-solid-color-background.jpg")
   password        String?
-  role            Role         @default(USER)
-  createdAt       DateTime     @default(now())
-  cityId          String
+  role            Role            @default(USER)
+  createdAt       DateTime        @default(now())
+  cityId          String?
   jobId           String
-  aboutme         String       @db.Text
-  job             jobTitle     @relation(name: "JobsToUser", fields: [jobId], references: [id])
+  aboutme         String          @db.Text
+  job             jobTitle        @relation(name: "JobsToUser", fields: [jobId], references: [id])
   secret          secret?
-  cv              String       @default("")
-  baseUser        following[]  @relation(name: "user")
-  userFollow      following[]  @relation(name: "userFollow")
-  github          String       @default("")
-  behance         String       @default("")
+  cv              String          @default("")
+  baseUser        following[]     @relation(name: "user")
+  userFollow      following[]     @relation(name: "userFollow")
+  github          String          @default("")
+  behance         String          @default("")
   Token           Token[]
   userSkills      userSkills[]
   userJobs        userJobs[]
   applayJobs      applayJobs[]
-  user            views[]      @relation(name: "user")
-  view            views[]      @relation(name: "view")
+  user            views[]         @relation(name: "user")
+  view            views[]         @relation(name: "view")
+  companyDetails  companyDetails?
+}
+
+model companyDetails {
+  company        User   @relation(fields: [companyId], references: [id])
+  companyId      String @unique
+  history        String
+  marketingValue String
+  websiteUrl     String
 }
 
 model views {
@@ -163,7 +172,6 @@ model companyLocation {
   code      String  @db.TinyText
   company   company @relation(fields: [companyId], references: [id])
   companyId String
-  url       String  @db.Text
   name      String
   jobs      jobs[]
 }

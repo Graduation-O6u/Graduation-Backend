@@ -20,6 +20,7 @@ import { loginDto } from "./dto/login.dto";
 import { verifyDto } from "./dto/verify.dto";
 import { forgetDto } from "./dto/forget.dto";
 import { changePasswordDto } from "./dto/changePassword.dto";
+import { createCompany } from "./dto/create-company.dto";
 @ApiTags("auth")
 @Controller("auth")
 export class AuthController {
@@ -31,6 +32,13 @@ export class AuthController {
     @Body(ValidationPipe) createAuthDto: createUser
   ) {
     return this.authService.signup(res, createAuthDto);
+  }
+  @Post("/signup/company")
+  signupCompany(
+    @Res() res: Response,
+    @Body(ValidationPipe) createCompanyDto: createCompany
+  ) {
+    return this.authService.signupCompany(res, createCompanyDto);
   }
   // signin
   @Post("/signin")

@@ -1,10 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, Matches, MaxLength, MinLength } from "class-validator";
 
-export class createUser {
+export class createCompany {
   @ApiProperty()
   @IsNotEmpty()
-  @MinLength(5)
+  @MinLength(3)
   @MaxLength(32)
   @IsNotEmpty()
   @Matches(/^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/, {
@@ -26,6 +26,15 @@ export class createUser {
       "password must have atleast 8 chars which should be between uppercase characters, lowercase characters, special characters, and numbers",
   })
   password: string;
+  @ApiProperty({
+    isArray: true,
+  })
+  @IsNotEmpty()
+  location: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  history: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -33,9 +42,9 @@ export class createUser {
 
   @ApiProperty()
   @IsNotEmpty()
-  cityId: string;
+  marketingValue: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  cv: string;
+  websiteUrl: string;
 }

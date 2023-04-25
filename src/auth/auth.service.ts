@@ -16,6 +16,8 @@ import * as pdfText from "pdf-text";
 import * as pdf from "pdf-text-extract";
 import * as fs from "fs";
 import path, { join } from "path";
+import { createCompany } from "./dto/create-company.dto";
+import { Role } from "@prisma/client";
 @Injectable()
 export class AuthService {
   constructor(
@@ -111,6 +113,83 @@ export class AuthService {
     });
   } //////////////////////
   //ss//////
+
+  async signupCompany(res, createCompanyDto: createCompany) {
+    const {
+      name,
+      email,
+      password,
+      location,
+      history,
+      jobId,
+      marketingValue,
+      websiteUrl,
+    } = createCompanyDto;
+    const emailExist = await this.prisma.user.findFirst({
+      where: {
+        email,
+      },
+    });
+    if (emailExist)
+      return ResponseController.conflict(res, "Email already exist");
+
+    const jobExist = await this.prisma.jobTitle.findUnique({
+      where: {
+        id: jobId,
+      },
+    });
+
+    //
+    //
+    if (!jobExist) return ResponseController.conflict(res, "Job not exist");
+
+    const hashPassword = await bcrypt.hash(password, 8);
+    const newUser = await this.prisma.user.create({
+      data: {
+        name: name,
+        email: email,
+        password: hashPassword,
+        jobId: jobId,
+        aboutme: "",
+        role: Role.COMPANY,
+      },
+    });
+    const companyDetails = await this.prisma.companyDetails.create({
+      data: {
+        companyId: newUser.id,
+        history,
+        marketingValue,
+        websiteUrl,
+      },
+    });
+
+    ////////
+
+    const secret = speakeasy.generateSecret().base32;
+    const code = speakeasy.totp({
+      secret: secret,
+      digits: 5,
+      encoding: "base32",
+      step: 300,
+    });
+    await this.mail.sendUserConfirmation(
+      name,
+      email,
+      `${process.env.BASE_URL}/auth/verify-email/${secret}`,
+      code.toString(),
+      "confirmation"
+    );
+    await this.prisma.secret.create({
+      data: {
+        userId: newUser.id,
+        url: secret,
+        code: code.toString(),
+      }, //
+    });
+    return ResponseController.success(res, "user created Successfully", {
+      secret,
+    });
+  }
   async signin(res, loginDto: loginDto) {
     const { email, password, remember } = loginDto;
     const emailExist = await this.prisma.user.findFirst({
