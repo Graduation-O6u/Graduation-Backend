@@ -8,9 +8,11 @@ import { UploadModule } from "./upload/upload.module";
 import { MailModule } from "./mail/mail.module";
 import { JobsModule } from "./jobs/jobs.module";
 import { UserModule } from "./user/user.module";
+import { MeetingModule } from './meeting/meeting.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
-  imports: [AuthModule, UploadModule, MailModule, JobsModule, UserModule],
+  imports: [AuthModule, UploadModule, MailModule, JobsModule, UserModule, MeetingModule, NotificationModule],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })

@@ -12,12 +12,12 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get("/company")
-  getCompany(@Res() res) {
-    return this.appService.getCompany(res);
-  }
   @Get("/api/v1/uploads/:id")
   sendFile(@Res() res, @Param("id") id: string) {
     return this.appService.sendFile(res, id);
+  }
+  @Get("/skills")
+  skills(@Res() res) {
+    return this.appService.skills(res);
   }
 }

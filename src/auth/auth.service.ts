@@ -119,12 +119,20 @@ export class AuthService {
       name,
       email,
       password,
-      location,
+      locationCode,
       history,
       jobId,
       marketingValue,
       websiteUrl,
     } = createCompanyDto;
+
+    let cities;
+    await fetch(
+      "https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/index.json"
+    )
+      .then((response) => response.json())
+      .then((data) => (cities = Object.keys(data).map((key) => data[key])));
+
     const emailExist = await this.prisma.user.findFirst({
       where: {
         email,
@@ -154,9 +162,23 @@ export class AuthService {
         role: "COMPANY",
       },
     });
-
-    ////////
-
+    await this.prisma.companyDetails.create({
+      data: {
+        companyId: newUser.id,
+        history,
+        marketingValue,
+        websiteUrl,
+      },
+    });
+    for (let i = 0; i < locationCode.length; i += 1) {
+      await this.prisma.companyLocation.create({
+        data: {
+          code: locationCode[i],
+          companyId: newUser.id,
+          name: cities.find((x) => x.code === locationCode[i]).name,
+        },
+      });
+    }
     const secret = speakeasy.generateSecret().base32;
     const code = speakeasy.totp({
       secret: secret,
@@ -205,12 +227,6 @@ export class AuthService {
         behance: true,
         backgroundImage: true,
         cv: true,
-
-        _count: {
-          select: {
-            userFollow: true,
-          },
-        },
       },
     });
     if (!emailExist)

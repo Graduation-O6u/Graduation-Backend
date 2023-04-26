@@ -2,10 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma.service";
 import { ResponseController } from "src/static/responses";
 import { searchDto } from "./dto/search.dto";
+import fetch from "node-fetch";
+import { MailService } from "src/mail/mail.service";
 
 @Injectable()
 export class JobsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private mail: MailService) {}
 
   async jobs(req, res, query) {
     if (query.type == "FeaturedJobs") {
@@ -21,10 +23,37 @@ export class JobsService {
       where: {
         id,
       },
-      select: {
+      include: {
         jobSkills: true,
       },
     });
+    const company = await this.prisma.user.findUnique({
+      where: {
+        id: req.user.userObject.id,
+      },
+      select: {
+        name: true,
+        image: true,
+      },
+    });
+    const numberOfApplicants = await this.prisma.applayJobs.count({
+      where: {
+        jobsId: id,
+      },
+    });
+    let cities;
+    await fetch(
+      "https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/index.json"
+    )
+      .then((response) => response.json())
+      .then((data) => (cities = Object.keys(data).map((key) => data[key])));
+    var city;
+    cities.forEach((element) => {
+      if (element["code"] == job.companyLocationId) {
+        city = element["name"];
+      }
+    });
+    job["location"] = city;
     if (!job) {
       return ResponseController.badRequest(
         res,
@@ -32,7 +61,11 @@ export class JobsService {
         "Job not found"
       );
     }
-    return ResponseController.success(res, "Get data Successfully", job);
+    return ResponseController.success(res, "Get data Successfully", {
+      job,
+      company,
+      numberOfApplicants,
+    });
   } //
   async RecommendedJobs(req, res, query) {
     let Salary;
@@ -327,6 +360,40 @@ export class JobsService {
     });
     return ResponseController.success(res, "Applay for Job Successfully");
   }
+  async addJob(req, res, addJobDto) {
+    const {
+      jobType,
+      jobLocationType,
+      salary,
+      salaryPer,
+      jobLocationId,
+      jobSkillId,
+      jobTitleId,
+      jobDescription,
+    } = addJobDto;
+    const job = await this.prisma.jobs.create({
+      data: {
+        jobType,
+        jobLocationType,
+        salary,
+        salaryPer,
+        companyLocationId: jobLocationId,
+        companyId: req.user.userObject.id,
+        jobTitleId,
+        jobDescription,
+      },
+    });
+    for (let i = 0; i < jobSkillId.length; i += 1) {
+      await this.prisma.jobSkills.create({
+        data: {
+          jobId: job.id,
+          skillId: jobSkillId[i],
+        },
+      });
+    }
+
+    return ResponseController.success(res, "add Data Successfully", null);
+  }
 
   async search(req, res, searchDto) {
     const { searchData } = searchDto;
@@ -337,20 +404,6 @@ export class JobsService {
           {
             jobTitle: {
               title: {
-                startsWith: searchData,
-              },
-            },
-          },
-          {
-            company: {
-              name: {
-                startsWith: searchData,
-              },
-            },
-          },
-          {
-            company: {
-              subTitle: {
                 startsWith: searchData,
               },
             },
@@ -376,5 +429,59 @@ export class JobsService {
       },
     });
     return ResponseController.success(res, "Get data successfully", jobs);
+  }
+  async meetUser(req, res, meetingDto) {
+    const { userId, date, time } = meetingDto;
+    const meet = await this.prisma.meetings.create({
+      data: {
+        companyId: req.user.userObject.id,
+        userId,
+        date,
+        time,
+        description: "",
+      },
+      include: {
+        User: true,
+      },
+    });
+    await this.mail.sendMeet(
+      meet.User.name,
+
+      meet.User.email,
+      req.user.userObject.id,
+      date,
+      time
+    );
+    await this.prisma.notification.create({
+      data: {
+        userId,
+        companyId: req.user.userObject.id,
+        description: `${req.user.userJobs.name} want to meet you check your mail for more details`,
+      },
+    });
+
+    return ResponseController.created(res, "meeting create Successdully", null);
+  }
+  async deleteApplay(req, res, id, userId) {
+    const job = await this.prisma.applayJobs.findFirst({
+      where: {
+        jobsId: id,
+        userId,
+      },
+    });
+    await this.prisma.applayJobs.delete({
+      where: {
+        id: job.id,
+      },
+    });
+    return ResponseController.success(res, "delete data successfully", null);
+  }
+  async deleteJob(req, res, id) {
+    await this.prisma.jobs.delete({
+      where: {
+        id,
+      },
+    });
+    return ResponseController.success(res, "delete Data Successfully", null);
   }
 }

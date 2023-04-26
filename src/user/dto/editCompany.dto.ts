@@ -7,27 +7,30 @@ import {
   IsUrl,
 } from "class-validator";
 
-export class editUserDto {
+export class editCompanyDto {
   @MinLength(5)
   @MaxLength(32)
   @ApiProperty()
+  @IsNotEmpty()
   name: string;
 
   @ApiProperty()
-  github: string;
-
-  @ApiProperty()
-  behance: string;
-
-  @ApiProperty()
+  @IsNotEmpty()
   about: string;
 
   @ApiProperty()
-  cityId: string;
-
-  @ApiProperty()
+  @IsNotEmpty()
   jobId: string;
 
   @ApiProperty()
-  cv: string;
+  @IsNotEmpty()
+  Url: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  history: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  marketingValue: number;
 }

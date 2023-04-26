@@ -26,13 +26,6 @@ import { createCompany } from "./dto/create-company.dto";
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post("/signup")
-  signup(
-    @Res() res: Response,
-    @Body(ValidationPipe) createAuthDto: createUser
-  ) {
-    return this.authService.signup(res, createAuthDto);
-  }
   @Post("/signup/company")
   signupCompany(
     @Res() res: Response,
@@ -40,6 +33,15 @@ export class AuthController {
   ) {
     return this.authService.signupCompany(res, createCompanyDto);
   }
+
+  @Post("/signup")
+  signup(
+    @Res() res: Response,
+    @Body(ValidationPipe) createAuthDto: createUser
+  ) {
+    return this.authService.signup(res, createAuthDto);
+  }
+
   // signin
   @Post("/signin")
   signin(@Res() res: Response, @Body(ValidationPipe) loginDto: loginDto) {

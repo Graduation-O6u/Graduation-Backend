@@ -30,7 +30,7 @@ export class createCompany {
     isArray: true,
   })
   @IsNotEmpty()
-  location: string;
+  locationCode: string;
 
   @ApiProperty()
   @IsNotEmpty()

@@ -16,6 +16,10 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { searchDto } from "./dto/search.dto";
+import { Role } from "@prisma/client";
+import { Roles, RolesGuard } from "src/auth/guards/roles.guard";
+import { addJobDto } from "./dto/addJob.dto";
+import { meetingDto } from "./dto/meeting.dto";
 @Controller("job")
 @ApiTags("job")
 export class JobsController {
@@ -67,7 +71,8 @@ export class JobsController {
     required: false,
   })
   @ApiBasicAuth("Access Token")
-  @UseGuards(AuthGuard("jwt"))
+  @Roles(Role.USER)
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Get("/all")
   async jobs(
     @Req() req,
@@ -89,6 +94,28 @@ export class JobsController {
   }
   @ApiBasicAuth("Access Token")
   @UseGuards(AuthGuard("jwt"))
+  @Post("/search")
+  async search(
+    @Req() req,
+    @Res() res,
+    @Body(ValidationPipe) searchDto: searchDto
+  ) {
+    return this.jobsService.search(req, res, searchDto);
+  }
+
+  @ApiBasicAuth("Access Token")
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles(Role.COMPANY)
+  @Post("/meetUser")
+  async meet(
+    @Req() req,
+    @Res() res,
+    @Body(ValidationPipe) meetingDto: meetingDto
+  ) {
+    return this.jobsService.meetUser(req, res, meetingDto);
+  }
+  @ApiBasicAuth("Access Token")
+  @UseGuards(AuthGuard("jwt"))
   @Get("/:id")
   async job(@Req() req, @Res() res, @Param("id") id: string) {
     return this.jobsService.jobs(req, res, id);
@@ -100,20 +127,43 @@ export class JobsController {
   async bookmark(@Req() req, @Res() res, @Param("id") id: string) {
     return this.jobsService.bookmark(req, res, id);
   }
+
   @ApiBasicAuth("Access Token")
   @UseGuards(AuthGuard("jwt"))
-  @Post("/search")
-  async search(
-    @Req() req,
-    @Res() res,
-    @Body(ValidationPipe) searchDto: searchDto
-  ) {
-    return this.jobsService.search(req, res, searchDto);
-  }
-  @ApiBasicAuth("Access Token")
-  @UseGuards(AuthGuard("jwt"))
-  @Post("/:id")
+  @Post("/:id/applay")
   async applay(@Req() req, @Res() res, @Param("id") id: string) {
     return this.jobsService.applay(req, res, id);
+  }
+
+  @ApiBasicAuth("Access Token")
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles(Role.COMPANY)
+  @Delete("/:id/deleteUser/:userId/Application")
+  async deleteApplay(
+    @Req() req,
+    @Res() res,
+    @Param("id") id: string,
+    @Param("userId") userId: string
+  ) {
+    return this.jobsService.deleteApplay(req, res, id, userId);
+  }
+
+  @ApiBasicAuth("Access Token")
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles(Role.COMPANY)
+  @Delete("/:id/delete")
+  async deleteJob(@Req() req, @Res() res, @Param("id") id: string) {
+    return this.jobsService.deleteJob(req, res, id);
+  }
+  @ApiBasicAuth("Access Token")
+  @Roles(Role.COMPANY)
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Post("/")
+  async addJob(
+    @Req() req,
+    @Res() res,
+    @Body(ValidationPipe) addJobDto: addJobDto
+  ) {
+    return this.jobsService.addJob(req, res, addJobDto);
   }
 }
