@@ -19,6 +19,14 @@ export class NotificationService {
             image: true,
           },
         },
+        company: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+        description: true,
+        read: true,
       },
       skip: parseInt(query.skip) || 0,
       take: +query.take || 10,
