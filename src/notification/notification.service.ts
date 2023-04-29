@@ -27,6 +27,7 @@ export class NotificationService {
         },
         description: true,
         read: true,
+        createdAt: true,
       },
       skip: parseInt(query.skip) || 0,
       take: +query.take || 10,
