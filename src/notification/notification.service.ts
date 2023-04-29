@@ -49,10 +49,9 @@ export class NotificationService {
         read: false,
       },
     });
-    return ResponseController.success(
-      res,
-      "Get Data Successfully",
-      size.toString
-    );
+    const Size = {
+      size: size,
+    };
+    return ResponseController.success(res, "Get Data Successfully", Size);
   }
 }
