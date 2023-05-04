@@ -532,6 +532,75 @@ export class AuthService {
     });
     return ResponseController.success(res, "Session destroyed successfully");
   }
+  async googleAuth(res, req) {
+    console.log("ssssssssssssssssssssss");
+    const user = req.user;
+    console.log(user);
+    if (!user) {
+      return ResponseController.badRequest(res, "No user from google", null);
+    }
+    const { email, firstName, lastName, picture } = user;
+    const userExist = await this.prisma.user.findFirst({
+      where: {
+        email,
+      },
+      include: {
+        provider: true,
+      },
+    });
+    if (!userExist && !userExist.provider) {
+      const hashPassword = await bcrypt.hash("*password123*", 8);
+
+      const userData = await this.prisma.user.create({
+        data: {
+          name: firstName + " " + lastName,
+          image: picture,
+          email,
+          emailVerified: true,
+          password: hashPassword,
+          aboutme: "",
+          jobId: "",
+        },
+      });
+      return ResponseController.created(res, "user created", userData);
+    }
+    if (!userExist.provider) {
+      return ResponseController.badRequest(res, "User already exist", null);
+    }
+    const refreshToken = await this.tokenServices.createRefresh(
+      userExist,
+      true
+    );
+    const accessToken = await this.tokenServices.createAccess(
+      userExist,
+      refreshToken.refreshId
+    );
+    const view = await this.prisma.views.count({
+      where: {
+        userId: userExist.id,
+      },
+    });
+    var cities;
+
+    await fetch(
+      "https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/index.json"
+    )
+      .then((response) => response.json())
+      .then((data) => (cities = Object.keys(data).map((key) => data[key])));
+    var city;
+    cities.forEach((element) => {
+      if (element["code"] == userExist.cityId) {
+        city = element["name"];
+      }
+    });
+    return ResponseController.success(res, "Login successfully", {
+      user: userExist,
+      view,
+      city,
+      accessToken,
+      refreshToken,
+    });
+  }
 }
 
 //

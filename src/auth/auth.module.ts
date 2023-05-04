@@ -7,8 +7,13 @@ import { tokenService } from "./token.service";
 import { jwtStrategy, refreshJwtStrategy } from "./stratiges/jwt.stratigy";
 import { MailModule } from "src/mail/mail.module";
 import { MulterModule } from "@nestjs/platform-express";
+import { PassportModule } from "@nestjs/passport";
+import { GoogleStrategy } from "./stratiges/google.stratigy";
+
 @Module({
   imports: [
+    PassportModule.register({ defaultStrategy: "google" }),
+
     MulterModule.register({
       dest: "../../uploads",
     }),
@@ -25,6 +30,7 @@ import { MulterModule } from "@nestjs/platform-express";
     tokenService,
     jwtStrategy,
     refreshJwtStrategy,
+    GoogleStrategy,
   ],
   controllers: [AuthController],
 })
