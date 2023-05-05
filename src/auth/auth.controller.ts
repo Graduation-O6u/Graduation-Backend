@@ -43,7 +43,7 @@ export class AuthController {
 
   @Get("google/callback")
   @UseGuards(GoogleOAuthGuard)
-  auth(@Res() res: Response, @Req() req: Request) {
+  auth(@Res() res: Response, @Req() req) {
     console.log("gggggggg");
     return this.authService.googleAuth(res, req);
   }
