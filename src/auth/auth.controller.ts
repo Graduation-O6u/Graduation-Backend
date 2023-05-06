@@ -22,6 +22,7 @@ import { forgetDto } from "./dto/forget.dto";
 import { changePasswordDto } from "./dto/changePassword.dto";
 import { createCompany } from "./dto/create-company.dto";
 import { GoogleOAuthGuard } from "./guards/google-oauth.guard";
+import { createUserFromGoogle } from "./dto/create-user-google.dto";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -35,17 +36,14 @@ export class AuthController {
   ) {
     return this.authService.signupCompany(res, createCompanyDto);
   }
-  @Get("google")
-  @UseGuards(GoogleOAuthGuard)
 
-  // @UseGuards(AuthGuard("google"))
-  async googleAuth() {}
-
-  @Get("google/callback")
-  @UseGuards(GoogleOAuthGuard)
-  auth(@Res() res: Response, @Req() req) {
-    console.log("gggggggg");
-    return this.authService.googleAuth(res, req);
+  @Post("google")
+  auth(
+    @Res() res: Response,
+    @Req() req,
+    @Body(ValidationPipe) createUserFromGoogle: createUserFromGoogle
+  ) {
+    return this.authService.googleAuth(res, req, createUserFromGoogle);
   }
   @Post("/signup")
   signup(

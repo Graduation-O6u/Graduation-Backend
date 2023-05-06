@@ -114,7 +114,7 @@ export class UserService {
   }
   async editCompany(req, res, editCompanyDto) {
     const { name, jobId, Url, about, history, marketingValue } = editCompanyDto;
-
+    console.log(req.user.userObject["id"]);
     await this.prisma.user.update({
       where: {
         id: req.user.userObject.id,
@@ -127,11 +127,11 @@ export class UserService {
     });
     await this.prisma.companyDetails.update({
       where: {
-        companyId: req.user.userSkills.id,
+        companyId: req.user.userObject.id,
       },
       data: {
         history,
-        marketingValue,
+       marketingValue: marketingValue.toString(),
         websiteUrl: Url,
       },
     });

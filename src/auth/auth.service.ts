@@ -532,29 +532,21 @@ export class AuthService {
     });
     return ResponseController.success(res, "Session destroyed successfully");
   }
-  async googleAuth(res, req) {
-    console.log("ssssssssssssssssssssss");
-    const user = req.user;
-    console.log(user);
-    if (!user) {
-      return ResponseController.badRequest(res, "No user from google", null);
-    }
-    const { email, firstName, lastName, picture } = user;
+  async googleAuth(res, req, body) {
+    console.log("enter Google");
+    const { email, name, image } = body;
     const userExist = await this.prisma.user.findFirst({
       where: {
         email,
       },
-      include: {
-        provider: true,
-      },
     });
-    if (!userExist && !userExist.provider) {
+    if (!userExist) {
       const hashPassword = await bcrypt.hash("*password123*", 8);
 
       const userData = await this.prisma.user.create({
         data: {
-          name: firstName + " " + lastName,
-          image: picture,
+          name,
+          image,
           email,
           emailVerified: true,
           password: hashPassword,
@@ -563,9 +555,6 @@ export class AuthService {
         },
       });
       return ResponseController.created(res, "user created", userData);
-    }
-    if (!userExist.provider) {
-      return ResponseController.badRequest(res, "User already exist", null);
     }
     const refreshToken = await this.tokenServices.createRefresh(
       userExist,
