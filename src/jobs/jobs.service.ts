@@ -26,7 +26,11 @@ export class JobsService {
       include: {
         jobSkills: true,
         jobTitle: true,
-        company: true,
+        company: {
+          include: {
+            jobs: true,
+          },
+        },
       },
     });
     const applayJob = await this.prisma.applayJobs.findFirst({
