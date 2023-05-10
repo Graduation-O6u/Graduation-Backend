@@ -29,7 +29,7 @@ export class JobsService {
         location: true,
         company: {
           include: {
-            jobs: true,
+            job: true,
           },
         },
       },
