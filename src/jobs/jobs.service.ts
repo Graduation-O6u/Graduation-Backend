@@ -25,6 +25,7 @@ export class JobsService {
       },
       include: {
         jobSkills: true,
+        jobTitle: true,
       },
     });
     const company = await this.prisma.user.findUnique({
