@@ -29,7 +29,12 @@ export class JobsService {
         company: true,
       },
     });
-
+    const applayJob = await this.prisma.applayJobs.findFirst({
+      where: {
+        userId: req.user.userObject.id,
+        jobsId: id,
+      },
+    });
     const numberOfApplicants = await this.prisma.applayJobs.count({
       where: {
         jobsId: id,
@@ -57,6 +62,7 @@ export class JobsService {
     }
     return ResponseController.success(res, "Get data Successfully", {
       job,
+      applayJob,
       numberOfApplicants,
     });
   } //
