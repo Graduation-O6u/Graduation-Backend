@@ -30,10 +30,12 @@ export class JobsService {
           },
         },
         jobTitle: true,
+
         location: true,
         company: {
           include: {
             job: true,
+            companyLocation: true,
           },
         },
       },
@@ -339,15 +341,13 @@ export class JobsService {
     }
   }
   async applay(req, res, id) {
-    const exist = await this.prisma.jobs.findUnique({
+    const exist = await this.prisma.applayJobs.findFirst({
       where: {
-        id,
-      },
-      select: {
-        applayJobs: true,
+        jobsId: id,
+        userId: req.user.userObject.id,
       },
     });
-    if (exist.applayJobs) {
+    if (exist) {
       return ResponseController.conflict(
         res,
         "You applayed for this job before"
