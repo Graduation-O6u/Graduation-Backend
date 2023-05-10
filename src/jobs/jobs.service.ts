@@ -24,7 +24,11 @@ export class JobsService {
         id,
       },
       include: {
-        jobSkills: true,
+        jobSkills: {
+          include: {
+            skill: true,
+          },
+        },
         jobTitle: true,
         location: true,
         company: {
