@@ -118,7 +118,7 @@ export class JobsController {
   @UseGuards(AuthGuard("jwt"))
   @Get("/:id")
   async job(@Req() req, @Res() res, @Param("id") id: string) {
-    return this.jobsService.jobs(req, res, id);
+    return this.jobsService.job(req, res, id);
   }
 
   @ApiBasicAuth("Access Token")

@@ -34,6 +34,11 @@ export class JobsService {
       select: {
         name: true,
         image: true,
+        jobs: {
+          select: {
+            jobTitle: true,
+          },
+        },
       },
     });
     const numberOfApplicants = await this.prisma.applayJobs.count({
