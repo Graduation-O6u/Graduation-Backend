@@ -353,13 +353,7 @@ export class JobsService {
         "You applayed for this job before"
       );
     }
-    if (!exist) {
-      return ResponseController.badRequest(
-        res,
-        "Job not found",
-        "Job not found"
-      );
-    }
+
     await this.prisma.applayJobs.create({
       data: {
         userId: req.user.userObject.id,
