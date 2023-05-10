@@ -26,22 +26,10 @@ export class JobsService {
       include: {
         jobSkills: true,
         jobTitle: true,
+        company: true,
       },
     });
-    const company = await this.prisma.user.findUnique({
-      where: {
-        id: req.user.userObject.id,
-      },
-      select: {
-        name: true,
-        image: true,
-        jobs: {
-          select: {
-            jobTitle: true,
-          },
-        },
-      },
-    });
+
     const numberOfApplicants = await this.prisma.applayJobs.count({
       where: {
         jobsId: id,
@@ -69,7 +57,6 @@ export class JobsService {
     }
     return ResponseController.success(res, "Get data Successfully", {
       job,
-      company,
       numberOfApplicants,
     });
   } //
