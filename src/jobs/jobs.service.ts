@@ -26,6 +26,7 @@ export class JobsService {
       include: {
         jobSkills: true,
         jobTitle: true,
+        location: true,
         company: {
           include: {
             jobs: true,
