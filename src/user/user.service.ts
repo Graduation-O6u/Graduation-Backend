@@ -131,7 +131,7 @@ export class UserService {
       },
       data: {
         history,
-       marketingValue: marketingValue.toString(),
+        marketingValue: marketingValue.toString(),
         websiteUrl: Url,
       },
     });
@@ -183,6 +183,7 @@ export class UserService {
       orderBy: { createdAt: "desc" }, //
       select: {
         id: true,
+        name: true,
         image: true,
         backgroundImage: true,
         aboutme: true,
