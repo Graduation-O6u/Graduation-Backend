@@ -182,6 +182,7 @@ export class UserService {
       take: +query.take || 6,
       orderBy: { createdAt: "desc" }, //
       select: {
+        job: true,
         id: true,
         name: true,
         image: true,
@@ -189,6 +190,7 @@ export class UserService {
         aboutme: true,
         github: true,
         behance: true,
+
         cv: true,
         companyDetails: true,
         companyLocation: true,
