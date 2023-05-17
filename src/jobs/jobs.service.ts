@@ -479,6 +479,21 @@ export class JobsService {
     return ResponseController.success(res, "delete data successfully", null);
   }
   async deleteJob(req, res, id) {
+    await this.prisma.jobSkills.deleteMany({
+      where: {
+        jobId: id,
+      },
+    });
+    await this.prisma.userJobs.deleteMany({
+      where: {
+        jobsId: id,
+      },
+    });
+    await this.prisma.applayJobs.deleteMany({
+      where: {
+        jobsId: id,
+      },
+    });
     await this.prisma.jobs.delete({
       where: {
         id,
