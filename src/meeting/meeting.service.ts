@@ -78,7 +78,7 @@ export class MeetingService {
       data: {
         userId: meet.userId,
         companyId: req.user.userObject.id,
-        description: `${req.user.userJobs.name} changed the status of the meeting that was made with you`,
+        description: `${req.user.userObject.name} changed the status of the meeting that was made with you`,
       },
     });
     return ResponseController.success(res, "Chnage data Successfully", null);
