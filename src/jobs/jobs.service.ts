@@ -476,10 +476,11 @@ export class JobsService {
         User: true,
       },
     });
+    console.log("sssssssss");
+    console.log(req.user.userObject["name"]);
     await this.mail.sendMeet(
-      meet.User.name,
-
-      meet.User.email,
+      meet["User"]["name"],
+      meet["User"]["email"],
       req.user.userObject.id,
       date,
       time
@@ -488,7 +489,7 @@ export class JobsService {
       data: {
         userId,
         companyId: req.user.userObject.id,
-        description: `${req.user.userJobs.name} want to meet you check your mail for more details`,
+        description: `${req.user.userObject["name"]} want to meet you check your mail for more details`,
       },
     });
 
