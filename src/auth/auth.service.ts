@@ -18,6 +18,7 @@ import * as fs from "fs";
 import path, { join } from "path";
 import { createCompany } from "./dto/create-company.dto";
 import { Role } from "@prisma/client";
+import { cites } from "src/util/cities";
 @Injectable()
 export class AuthService {
   constructor(
@@ -127,11 +128,7 @@ export class AuthService {
     } = createCompanyDto;
 
     let cities;
-    await fetch(
-      "https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/index.json"
-    )
-      .then((response) => response.json())
-      .then((data) => (cities = Object.keys(data).map((key) => data[key])));
+    cities = Object.keys(cites).map((key) => cites[key]);
 
     const emailExist = await this.prisma.user.findFirst({
       where: {

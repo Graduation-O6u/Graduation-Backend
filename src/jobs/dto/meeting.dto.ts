@@ -13,5 +13,9 @@ export class meetingDto {
   @IsNotEmpty()
   @ApiProperty()
   time: string;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  jobId: string;
 }
 //

@@ -18,6 +18,35 @@ export class JobsService {
       return this.savedJobs(req, res, query);
     }
   }
+  async jobApplicants(req, res, id) {
+    const job = await this.prisma.applayJobs.findMany({
+      where: {
+        jobsId: id,
+      },
+      include: {
+        User: {
+          include: {
+            job: true,
+          },
+        },
+      },
+    });
+    for (let i = 0; i < job.length; i += 1) {
+      const x = await this.prisma.meetings.findFirst({
+        where: {
+          userId: job[i]["userId"],
+          jobsId: job[i]["jobsId"],
+        },
+      });
+      if (x) {
+        job[i]["meeting"] = true;
+      } else {
+        job[i]["meeting"] = false;
+      }
+    }
+
+    return ResponseController.success(res, "Get data Successfully", job);
+  }
   async job(req, res, id) {
     const job = await this.prisma.jobs.findUnique({
       where: {
@@ -433,7 +462,7 @@ export class JobsService {
     return ResponseController.success(res, "Get data successfully", jobs);
   }
   async meetUser(req, res, meetingDto) {
-    const { userId, date, time } = meetingDto;
+    const { userId, date, time, jobId } = meetingDto;
     const meet = await this.prisma.meetings.create({
       data: {
         companyId: req.user.userObject.id,
@@ -441,6 +470,7 @@ export class JobsService {
         date,
         time,
         description: "",
+        jobsId: jobId,
       },
       include: {
         User: true,

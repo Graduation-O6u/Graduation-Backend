@@ -90,6 +90,7 @@ model jobs {
     userJobs          userJobs[]
     jobDescription    String          @db.Text
     applayJobs        applayJobs[]
+    meetings          meetings[]
 }
 
 model applayJobs {
@@ -110,6 +111,8 @@ model meetings {
     companyId   String
     date        DateTime
     time        String
+    jobs        jobs          @relation(fields: [jobsId], references: [id])
+    jobsId      String
     description String?       @db.LongText
     status      meetingStatus @default(Pending)
 }
