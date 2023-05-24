@@ -40,6 +40,13 @@ export class MeetingService {
         where: {
           companyId: req.userId,
         },
+        include: {
+          User: {
+            include: {
+              job: true,
+            },
+          },
+        },
         skip: parseInt(query.skip) || 0,
         take: +query.take || 10,
         orderBy: { date: "desc" },
