@@ -62,7 +62,7 @@ export class MeetingController {
   }
   @ApiBasicAuth("Access Token")
   @UseGuards(AuthGuard("jwt"))
-  @Get("/:id/sendLink")
+  @Post("/:id/sendLink")
   async sendLink(
     @Req() req,
     @Res() res,
