@@ -244,14 +244,9 @@ export class AuthService {
         userId: emailExist.id,
       },
     });
-    var cities;
-
-    await fetch(
-      "https://cdn.jsdelivr.net/npm/country-flag-emoji-json@2.0.0/dist/index.json"
-    )
-      .then((response) => response.json())
-      .then((data) => (cities = Object.keys(data).map((key) => data[key])));
-    var city;
+    let cities = cites;
+    console.log(cities);
+    let city;
     cities.forEach((element) => {
       if (element["code"] == emailExist.cityId) {
         city = element["name"];

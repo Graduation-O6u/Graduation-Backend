@@ -13,7 +13,7 @@ import { join } from "path";
         secure: false,
         auth: {
           user: "fahd@prefectjob.com",
-          pass: "xX<_%i59Fp}7h|R",
+          pass: "B77bknada*",
         },
       },
     }),
