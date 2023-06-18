@@ -155,6 +155,7 @@ export class AuthService {
         email: email,
         password: hashPassword,
         jobId: jobId,
+        emailVerified: true,
         aboutme: "",
         role: "COMPANY",
       },

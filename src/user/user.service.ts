@@ -3,6 +3,10 @@ import { PrismaService } from "src/prisma.service";
 import { ResponseController } from "src/util/response.controller";
 import fetch from "node-fetch";
 import { Role } from "@prisma/client";
+import * as fs from "fs";
+import * as pdfParse from "pdf-parse";
+import path, { join } from "path";
+import axios from "axios";
 
 @Injectable()
 export class UserService {
@@ -91,6 +95,60 @@ export class UserService {
       user: emailExist,
       view,
     });
+  }
+  async getPdf(fileUrl, search) {
+    try {
+      const response = await axios.get(fileUrl, {
+        responseType: "arraybuffer", // Set the response type to arraybuffer
+      });
+
+      const pdfBuffer = response.data;
+      const pdfExtract = await pdfParse(pdfBuffer);
+
+      console.log(pdfExtract.text);
+
+      if (pdfExtract.text.includes(search)) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+  async search(req, res, searchDto) {
+    // const filePath = join(
+    //   __dirname,
+    //   "..",
+    //   `/uploads/${id.split("uploads/")[0]}`
+    // );
+
+    const users = await this.prisma.user.findMany({
+      where: {
+        role: "USER",
+      },
+
+      select: {
+        job: true,
+        id: true,
+        name: true,
+        image: true,
+        backgroundImage: true,
+        aboutme: true,
+        github: true,
+        behance: true,
+
+        cv: true,
+      },
+    });
+
+    const searchedUsers = [];
+    for (let i = 0; i < users.length; i += 1) {
+      if (this.getPdf(users[i]["cv"], searchDto)) {
+        searchedUsers.push(users[i]);
+      }
+    }
+    return ResponseController.success(res, "Get data success", searchedUsers);
   }
 
   async editUser(req, res, editUserDto) {

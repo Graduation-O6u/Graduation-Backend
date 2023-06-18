@@ -21,6 +21,7 @@ import { Role } from "@prisma/client";
 import { editImageDto } from "./dto/editImage.dto";
 import { locationDto } from "./dto/location.dto";
 import { editCompanyDto } from "./dto/editCompany.dto";
+import { searchDataDto } from "./dto/searchUser.dto";
 
 @Controller("user")
 @ApiTags("user")
@@ -63,7 +64,6 @@ export class UserController {
   @Patch("/profileImage")
   async profileImage(
     @Req() req,
-
     @Res() res,
     @Body(ValidationPipe) editImageDto: editImageDto
   ) {
@@ -150,6 +150,17 @@ export class UserController {
     @Body(ValidationPipe) locationDto: locationDto
   ) {
     return this.userService.addCompanyLocations(req, res, locationDto);
+  }
+  @ApiBasicAuth("Access Token")
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Roles(Role.COMPANY)
+  @Post("/search")
+  search(
+    @Req() req,
+    @Res() res,
+    @Body(ValidationPipe) searchDataDto: searchDataDto
+  ) {
+    return this.userService.search(req, res, searchDataDto);
   }
 
   @ApiBasicAuth("Access Token")
