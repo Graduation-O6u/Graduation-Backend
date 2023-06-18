@@ -97,17 +97,27 @@ export class UserService {
     });
   }
   async getPdf(fileUrl, search) {
+    console.log(search);
     try {
+      // console.log("ss");
+
       const response = await axios.get(fileUrl, {
         responseType: "arraybuffer", // Set the response type to arraybuffer
       });
+      // console.log("//////////////////////////");
+      // console.log(response);
+      console.log(fileUrl);
+
+      // console.log("ss1");
 
       const pdfBuffer = response.data;
+      // console.log("ss2");
+
       const pdfExtract = await pdfParse(pdfBuffer);
-
-      console.log(pdfExtract.text);
-
-      if (pdfExtract.text.includes(search)) {
+      // console.log(pdfExtract.text.toString());
+      // console.log(pdfExtract.text.includes(search));
+      if (pdfExtract.text.toString().includes(search)) {
+        console.log("yes");
         return true;
       } else {
         return false;
@@ -141,10 +151,17 @@ export class UserService {
         cv: true,
       },
     });
+    console.log(searchDto["searchData"]);
+    const data = searchDto["searchData"];
 
+    console.log("////////////");
+    console.log(data);
+    const { searchData } = searchDto;
     const searchedUsers = [];
     for (let i = 0; i < users.length; i += 1) {
-      if (this.getPdf(users[i]["cv"], searchDto)) {
+      const x = await this.getPdf(users[i]["cv"], data);
+      console.log(x);
+      if (x) {
         searchedUsers.push(users[i]);
       }
     }
