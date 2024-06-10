@@ -13,7 +13,7 @@ export class MailService {
     template: string
   ) {
     await this.mailerService.sendMail({
-      from: "fahd@prefectjob.com",
+      from: "votingsys23@gmail.com",
       to: email,
       // from: '"Support Team" <support@example.com>', // override default from
       subject: "Welcome to Nice App! Confirm your Email",
@@ -24,7 +24,7 @@ export class MailService {
 
   async sendMeet(name, email, company: string, day, time) {
     await this.mailerService.sendMail({
-      from: "fahd@prefectjob.com",
+      from: "votingsys23@gmail.com",
       to: email,
       // from: '"Support Team" <support@example.com>', // override default from
       subject: "Meeting",
@@ -34,7 +34,7 @@ export class MailService {
   }
   async sendLink(name, email, link) {
     await this.mailerService.sendMail({
-      from: "fahd@prefectjob.com",
+      from: "votingsys23@gmail.com",
       to: email,
       // from: '"Support Team" <support@example.com>', // override default from
       subject: "Meeting",

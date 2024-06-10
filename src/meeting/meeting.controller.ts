@@ -16,7 +16,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { Roles, RolesGuard } from "src/auth/guards/roles.guard";
 import { Role } from "@prisma/client";
 import { MeetingService } from "./meeting.service";
-import { sendLinkDto } from "./dto/create-meeting.dto";
+import { createMeetingDto, sendLinkDto } from "./dto/create-meeting.dto";
 import { changeStatusDto } from "./dto/update-meeting.dto";
 import { ApiTags, ApiBasicAuth, ApiQuery } from "@nestjs/swagger";
 
@@ -48,6 +48,16 @@ export class MeetingController {
     }
   ) {
     return this.meetingService.getAll(req, res, query);
+  }
+  @ApiBasicAuth("Access Token")
+  @UseGuards(AuthGuard("jwt"))
+  @Post("/")
+  async createMeeting(
+    @Req() req,
+    @Res() res,
+    @Body(ValidationPipe) CreateMeetingDto: createMeetingDto
+  ) {
+    return this.meetingService.createMeeting(req, res, CreateMeetingDto);
   }
   @ApiBasicAuth("Access Token")
   @UseGuards(AuthGuard("jwt"))

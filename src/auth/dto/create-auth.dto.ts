@@ -23,7 +23,7 @@ export class createUser {
   @ApiProperty()
   @Matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/, {
     message:
-      "password must have atleast 8 chars which should be between uppercase characters, lowercase characters, special characters, and numbers",
+      "password must have at least 8 chars which should be between uppercase characters, lowercase characters and numbers",
   })
   password: string;
 
@@ -39,3 +39,4 @@ export class createUser {
   @IsNotEmpty()
   cv: string;
 }
+//

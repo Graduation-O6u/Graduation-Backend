@@ -27,8 +27,9 @@ export class AuthService {
     private mail: MailService
   ) {}
   async getPdf(file, userId: string) {
-    let readFileSync = fs.readFileSync(file);
     try {
+      let readFileSync = fs.readFileSync(file);
+
       let pdfExtract = await pdfParse(readFileSync);
       const skills = await this.prisma.skills.findMany();
       for (let i = 0; i < skills.length; i += 1) {
@@ -44,6 +45,7 @@ export class AuthService {
     } catch (error) {
       throw new Error(error);
     }
+    //
   }
   // signip
   async signup(res, createUser: createUser) {
@@ -70,8 +72,7 @@ export class AuthService {
     const hashPassword = await bcrypt.hash(password, 8);
 
     ////
-    const apiSecret = join(process.cwd(), `${cv.split("v1/")[1]}`);
-
+    const apiSecret = join(process.cwd(), `/uploads/${cv.split("v1/")[1]}`);
     //
     const newUser = await this.prisma.user.create({
       data: {
@@ -98,7 +99,7 @@ export class AuthService {
     await this.mail.sendUserConfirmation(
       name,
       email,
-      `${process.env.BASE_URL}/auth/verify-email/${secret}`,
+      `${process.env.BASE_URL2}/auth/verify-email/${secret}`,
       code.toString(),
       "confirmation"
     );

@@ -35,7 +35,6 @@ export class JobsService {
       const x = await this.prisma.meetings.findFirst({
         where: {
           userId: job[i]["userId"],
-          jobsId: job[i]["jobsId"],
         },
       });
       if (x) {
@@ -69,7 +68,7 @@ export class JobsService {
         },
       },
     });
-    const applayJob = await this.prisma.applayJobs.findFirst({
+    const applyJob = await this.prisma.applayJobs.findFirst({
       where: {
         userId: req.user.userObject.id,
         jobsId: id,
@@ -100,11 +99,19 @@ export class JobsService {
         "Job not found"
       );
     }
-    return ResponseController.success(res, "Get data Successfully", {
-      job,
-      applayJob,
-      numberOfApplicants,
-    });
+    if (applyJob) {
+      return ResponseController.success(res, "Get data Successfully", {
+        job,
+        applayJob: true,
+        numberOfApplicants,
+      });
+    } else {
+      return ResponseController.success(res, "Get data Successfully", {
+        job,
+        applayJob: false,
+        numberOfApplicants,
+      });
+    }
   } //
   async RecommendedJobs(req, res, query) {
     let Salary;
@@ -144,7 +151,7 @@ export class JobsService {
         },
       },
     });
-    const size = await this.prisma.jobs.count({});
+    let size = await this.prisma.jobs.count({});
     let jobs = await this.prisma.jobs.findMany({
       where: {
         jobTitleId: query.jobTitle ? query.jobTitle : userTitle.jobId,
@@ -178,7 +185,7 @@ export class JobsService {
         location: true,
       },
     });
-    const RecommendedJobs = [];
+    let RecommendedJobs = [];
     for (let i = 0; i < jobs.length; i += 1) {
       let x = 0;
       for (let j = 0; j < jobs[i].jobSkills.length; j += 1) {
@@ -190,7 +197,42 @@ export class JobsService {
       });
     }
     RecommendedJobs.sort((a, b) => a.similarity - b.similarity);
-
+    if (RecommendedJobs.length === 0) {
+      RecommendedJobs = await this.prisma.jobs.findMany({
+        skip: parseInt(query.skip) || 0,
+        take: +query.take || 6,
+        where: {
+          jobTitleId: query.jobTitle,
+          jobLocationType: query.wayOfWork || {},
+          jobType: query.jobType || {},
+          salary: {
+            lte: Salary || 100000000,
+          },
+          companyId: query.company || {},
+          location: {
+            code: query.jobLocation || {},
+          }, ////
+        },
+        orderBy: { createdAt: "desc" }, //
+        include: {
+          jobTitle: true,
+          jobSkills: {
+            include: {
+              skill: true,
+            },
+          },
+          applayJobs: {
+            where: {
+              userId: req.user.userObject.id,
+            },
+          },
+          company: true,
+          userJobs: true,
+          location: true,
+        }, ////
+      });
+      size = await this.prisma.jobs.count({});
+    }
     return ResponseController.success(res, "Get Data Successfully", {
       RecommendedJobs,
       size,
@@ -282,7 +324,7 @@ export class JobsService {
         Salary = 1000000; //
       }
     }
-    const savedJobs = await this.prisma.userJobs.findMany({
+    const SavedJobs = await this.prisma.userJobs.findMany({
       where: {
         userId: req.user.userObject.id,
         jobs: {
@@ -314,6 +356,7 @@ export class JobsService {
             },
             company: true,
             location: true,
+            userJobs: true,
             jobTitle: true,
           },
         },
@@ -324,6 +367,10 @@ export class JobsService {
         userId: req.user.userObject.id,
       },
     });
+    const savedJobs = [];
+    for (let i = 0; i < SavedJobs.length; i += 1) {
+      savedJobs.push(SavedJobs[i].jobs);
+    }
     return ResponseController.success(res, "Get Data Successfully", {
       savedJobs,
       size,
@@ -468,9 +515,7 @@ export class JobsService {
         companyId: req.user.userObject.id,
         userId,
         date,
-        time,
         description: "",
-        jobsId: jobId,
       },
       include: {
         User: true,

@@ -91,9 +91,37 @@ export class MeetingService {
       },
       include: {
         User: true,
+        company: true,
       },
     });
     await this.mail.sendLink(data.User.name, data.User.email, link);
+    await this.prisma.notification.create({
+      data: {
+        description: `${data.company.id} sent the meeting link. Check your email for further details.`,
+        userId: data.User.id,
+        companyId: data.company.id,
+      },
+    });
     return ResponseController.success(res, "Send Link Successfully", null);
+  }
+
+  async createMeeting(req, res, createMeetingTO) {
+    const { userId, companyId, date, description } = createMeetingTO;
+    await this.prisma.meetings.create({
+      data: {
+        userId: userId,
+        companyId: companyId,
+        date: new Date(date),
+        description: description,
+      },
+    });
+    await this.prisma.notification.create({
+      data: {
+        userId,
+        companyId,
+        description,
+      },
+    });
+    return ResponseController.success(res, "Create Meeting Successfully", null);
   }
 }

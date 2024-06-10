@@ -8,12 +8,12 @@ import { join } from "path";
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: "smtp.titan.email",
+        host: "smtp-relay.brevo.com",
         port: 587,
         secure: false,
         auth: {
-          user: "fahd@prefectjob.com",
-          pass: "B77bknada*",
+          user: "75d6be001@smtp-brevo.com",
+          pass: "NjVHYFLKEP2OfQ1z",
         },
       },
     }),

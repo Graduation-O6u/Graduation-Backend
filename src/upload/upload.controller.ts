@@ -22,9 +22,7 @@ export class UploadController {
   uploadFile(@UploadedFile(ParseFile) file): Observable<{ url: string }> {
     console.log(__dirname);
     return of({
-      url: `${process.env.BASE_URL}/api/v1/${file.path
-        .replace("uploads\\", "")
-        .replace("\\", "/")}`,
+      url: `${process.env.BASE_URL}/api/v1/${file.path.replace("\\", "/")}`,
     });
   }
 }

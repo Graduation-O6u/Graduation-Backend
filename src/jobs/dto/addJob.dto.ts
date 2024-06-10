@@ -1,5 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, MaxLength, MinLength, isArray } from "class-validator";
+import {
+  IsNotEmpty,
+  MaxLength,
+  MinLength,
+  isArray,
+  minLength,
+} from "class-validator";
 
 export class addJobDto {
   @IsNotEmpty()
