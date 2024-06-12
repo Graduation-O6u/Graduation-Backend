@@ -409,7 +409,7 @@ export class AuthService {
     await this.mail.sendUserConfirmation(
       emailExist.name,
       email,
-      `${process.env.BASE_URL}/auth/reset-password/${secret}`,
+      `${process.env.BASE_URL2}/auth/reset-password/${secret}`,
       code.toString(),
       "confirmation"
     );
