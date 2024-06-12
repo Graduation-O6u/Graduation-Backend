@@ -91,6 +91,7 @@ export class AuthController {
   ) {
     return this.authService.resetPassword(id, res, verifyDto);
   }
+
   @Post("/change-password/:id")
   async changePassword(
     @Param("id") id: string,

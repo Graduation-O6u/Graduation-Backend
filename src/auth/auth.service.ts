@@ -446,20 +446,7 @@ export class AuthService {
     if (userExist.code !== code) {
       return ResponseController.badRequest(res, "Invalid Code", "Invalid Code");
     }
-    await this.prisma.secret.deleteMany({
-      where: {
-        userId: userExist.user.id,
-      },
-    });
-    const url = process.env.BASE_URL + "/auth/change_password/" + secret;
-    await this.prisma.secret.create({
-      data: {
-        code: code,
-        url: secret,
-        userId: userExist.user.id,
-        type: "PASSWORD_RESET",
-      },
-    });
+
     return ResponseController.success(res, "Email Verified Successfully", {
       url,
       secret,
