@@ -72,7 +72,7 @@ export class AuthService {
     const hashPassword = await bcrypt.hash(password, 8);
 
     ////
-    const apiSecret = join(process.cwd(), `/uploads/${cv.split("v1/")[1]}`);
+    const apiSecret = join(process.cwd(), `/${cv.split("v1/")[1]}`);
     //
     const newUser = await this.prisma.user.create({
       data: {
